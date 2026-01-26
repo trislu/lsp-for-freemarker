@@ -1,0 +1,9 @@
+identifier = "size"
+category = "built-in"
+markdown = """
+# size
+---
+> category: [Built-ins for sequences](https://freemarker.apache.org/docs/ref_builtins_sequence.html#ref_builtin_size)
+---
+The number of sub variables in sequence (as a numerical value). The highest possible index in sequence `s` is `s?size - 1` (since the index of the first subvariable is 0) assuming that the sequence has at least one subvariable.
+"""

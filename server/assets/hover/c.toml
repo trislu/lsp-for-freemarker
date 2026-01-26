@@ -1,0 +1,30 @@
+identifier = "c"
+category = "built-in"
+markdown = """
+# c
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_c_string)
+---
+> __Note:__
+> The `c` built-in also works [on numbers](https://freemarker.apache.org/docs/ref_builtins_number.html#ref_builtin_c), and [on booleans](https://freemarker.apache.org/docs/ref_builtins_boolean.html#ref_builtin_c_boolean)!
+
+> __Note:__
+> To provide a background, see [Template Author's Guide/Miscellaneous/Formatting for humans, or for computers](https://freemarker.apache.org/docs/dgui_misc_computer_vs_human_format.html)
+
+> __Note:__
+> The `c` built-in supports strings since FreeMarker 2.3.32.
+
+This built-in converts a string to a "computer language" literal, according the value of the [c_format setting](https://freemarker.apache.org/docs/gloss.html#gloss.c_format).
+
+For the `c_format`-s that are built into FreeMarker the rules are the following:
+
++ "JSON", "legacy": Gives a JSON string literal, that is, it will be surrounded with quotation marks ("), and will be escaped using backslash (\\) where needed. For the exact escaping rules see [the json_string built-in](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_json_string).
+
++ "JavaScript": Almost the same as JSON, but uses `\\xXX` instead of `\\uXXXX` where possible. For the exact escaping rules see [the js_string built-in](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_js_string), except that this won't escape the apostrophe quote (since it knows that it has used quotation marks around the string literal).
+
++ "Java": Gives a Java string literal, that is, it will be surrounded with quotation marks ("), and will be escaped using backslash (\\) where needed. For the exact escaping rules see [the j_string built-in](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_j_string).
+
++ "XS": Leaves the string as is. The idea is that you will insert the value as the body of an XML element, or into an XML attribute, so it needs no quotation, or any other special syntax. While it does need XML encoding, that should be handled by the [automatic escaping facility](https://freemarker.apache.org/docs/dgui_misc_autoescaping.html), and not by the `c_format` facility.
+
+If the value the `c` built-in is applied on is `null`/missing, it will stop the template processing with error, just like most other built-ins. If instead you want to output a `null` literal, see the [cn built-in](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_cn_string).
+"""

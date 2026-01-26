@@ -1,0 +1,22 @@
+category = "directive"
+label = "function"
+insert_text = """function function_name param1 param2 paramN>
+  ...
+  <#return returnValue>
+  ...
+</#function>"""
+documentation = """
+The `<#function>` directive, see the [directive reference](https://freemarker.apache.org/docs/ref_directive_function.html) for more info.
+
+---
+## Description
+Creates a method variable (in the current namespace, if you know namespace feature). This directive works in the same way as the macro directive, except that `return` directive must have a parameter that specifies the return value of the method, and that attempts to write to the output will be ignored. If the `</#function>` is reached (i.e. there was no `return returnValue`), then the return value of the method is an undefined variable.
+
+## Examples
+```
+<#function avg x y>
+  <#return (x + y) / 2>
+</#function>
+${avg(10, 20)} == 15
+```
+"""

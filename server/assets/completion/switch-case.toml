@@ -1,0 +1,42 @@
+category = "directive"
+deprecated = true
+label = "switch"
+insert_text = """switch value>
+  <#case "alice">
+    ... (Handles "alice")
+    <#break>
+  <#case "bob">
+  <#case "carol">
+    ... (Handles both "bob" and "carol")
+    <#break>
+  <#case "zoe">
+    ...
+    <#break>
+  <#default>
+    ...
+</#switch>"""
+documentation = """
+The __deprecated__ *`case`-based* form `<#switch>` directive, see the [directive reference](https://freemarker.apache.org/docs/ref_directive_switch.html) for more info.
+
+---
+## Examples
+```
+<#switch animal.size>
+  <#case "small">
+     Processed if animal.size was "small" 
+     <#break>
+  <#case "medium">
+     Processed if animal.size was "medium" 
+     <#break>
+  <#case "large">
+  <#case "extra large">
+     Processed if animal.size was "large" or "extra large"
+     <#break>
+  <#default>
+     Processed if animal.size is neither of the above
+</#switch>
+```
+"""
+[label_details]
+detail = "(case)"
+description = "deprecated"

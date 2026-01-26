@@ -1,0 +1,15 @@
+category = "directive"
+label = "import"
+# text to be insert, note the "<#" is omitted
+insert_text = """import "foo.ftl" as foo_hash>"""
+# documentation in markdown format
+documentation = """
+The `<#import>` directive, see the [directive reference](https://freemarker.apache.org/docs/ref_directive_import.html) for more info.
+
+---
+## Examples
+```
+<#import "/libs/commons.ftl" as com>
+<@com.copyright date="1999-2002"/>
+```
+"""

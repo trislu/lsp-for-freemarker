@@ -1,0 +1,11 @@
+[workspace]
+members = ["server"]
+resolver = "2"
+
+[workspace.package]
+rust-version = "1.90"
+edition = "2024"
+license = "BSD-3-Clause"
+
+[profile.release]
+strip = true

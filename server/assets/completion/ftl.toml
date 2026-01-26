@@ -1,0 +1,15 @@
+category = "directive"
+label = "ftl"
+insert_text = """ftl param1=false param2=2 param3=3.14 paramN="valueN">"""
+documentation = """
+The `<#ftl>` directive, see the [directive reference](https://freemarker.apache.org/docs/ref_directive_ftl.html) for more info.
+
+---
+## Description
+Tells information about the template for FreeMarker and for other tools, also helps programs to automatically detect if a text file is an FTL file. This directive, if present, must be the very first thing in the template. Any white-space before this directive will be ignored. 
+
+## Examples
+```
+<#ftl foo="alice" bar="bob">
+```
+"""

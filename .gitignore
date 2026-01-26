@@ -1,0 +1,4 @@
+/target
+clients/demo
+*.wasm
+*.so

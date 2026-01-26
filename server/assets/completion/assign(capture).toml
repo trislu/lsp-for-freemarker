@@ -1,0 +1,26 @@
+category = "directive"
+label = "assign"
+insert_text = """assign name>
+  capture text
+</#assign>"""
+documentation = """
+The *`capture` form* `<#assign>` directive, see the [directive reference](https://freemarker.apache.org/docs/ref_directive_assign.html) for more info.
+
+---
+## Description
+An extreme usage of assign is when it captures the output generated between its start-tag and end-tag. That is, things that are printed between the tags will not be shown on the page, but will be stored in the variable.
+## Examples
+```
+<#assign name>
+  capture this
+</#assign>
+```
+or
+```
+<#assign name in namespacehash>
+  capture this
+</#assign>
+```
+"""
+[label_details]
+detail = "(capture)"

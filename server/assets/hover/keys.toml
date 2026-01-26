@@ -1,0 +1,26 @@
+identifier = "keys"
+category = "built-in"
+markdown = """
+# keys
+---
+> category: [Built-ins for hashes](https://freemarker.apache.org/docs/ref_builtins_hash.html#ref_builtin_keys)
+---
+A sequence that contains all the lookup keys in the hash.
+
+```Template
+<#assign myHash = { "name": "mouse", "price": 50 }>
+<#list myHash?keys as k>
+  ${k}
+</#list>
+```
+```Output
+  name
+  price
+```
+Note that not all hashes support this (ask the programmer if a certain hash allows this or not).
+
+Since hashes do not define an order for their sub variables in general, the order in which key names are returned can be arbitrary. However, some hashes maintain a meaningful order (ask the programmer if a certain hash does that or not). For example, hashes created with the above `{...}` syntax preserve the same order as you have specified the sub variables.
+
+> __Note:__
+> To list both the keys and the values, you can use <#list attrs as key, value>...<#list>; see the [*list* directive](https://freemarker.apache.org/docs/ref_directive_list.html#ref.directive.list).
+"""
