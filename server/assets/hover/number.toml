@@ -1,0 +1,15 @@
+identifier = "number"
+category = "built-in"
+markdown = """
+# number
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_number)
+---
+The string converted to numerical value. The number must be in "computer language" format. That is, it must be in the locale independent form, where the decimal separator is dot, and there's no grouping.
+
+This built-in recognizes numbers in the format that the FreeMarker template language uses. In additionally, it recognizes scientific notation (e.g. `"1.23E6"`, `"1.5e-8"`). Since FreeMarker 2.3.21, it also recognizes all XML Schema number formats, like `NaN`, `INF`, `-INF`, plus the Java-native formats `Infinity` and `-Infinity`.
+
+If the string is not in the appropriate format, an error will abort template processing when you try to access this built-in.
+
+*In fact, the string is parsed by the `toNumber` method of the current `arithmetic_engine`, which is configuration setting. However, that method should behave similarly as described above.*
+"""

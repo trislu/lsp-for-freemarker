@@ -1,0 +1,18 @@
+category = "directive"
+label = "list"
+insert_text = """list hash as key, value>
+    Part repeated for each key-value pair
+</#list>"""
+documentation = """
+The *`hash`-aimed*  `<#list>` directive, see the [directive reference](https://freemarker.apache.org/docs/ref_directive_list.html) for more info.
+
+---
+## Examples
+```
+<#list hash as key, value>
+    Part repeated for each key-value pair
+</#list>
+```
+"""
+[label_details]
+detail = "(hash)"

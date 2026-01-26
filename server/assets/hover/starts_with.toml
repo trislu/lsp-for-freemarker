@@ -1,0 +1,11 @@
+identifier = "starts_with"
+category = "built-in"
+markdown = """
+# starts_with
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_starts_with)
+---
+Returns if this string starts with the specified substring. For example `"redirect"?starts_with("red")` returns boolean `true`. Also, `"red"?starts_with("red")` will return `true`.
+> __Note:__
+> To check if a strings starts with something and prepend it otherwise, use [the *ensure_starts_with* built-in](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_ensure_starts_with).
+"""

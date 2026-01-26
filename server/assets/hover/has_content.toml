@@ -1,0 +1,11 @@
+identifier = "has_content"
+category = "built-in"
+markdown = """
+# has_content
+---
+> category: [Seldom used and expert built-ins](https://freemarker.apache.org/docs/ref_builtins_expert.html#ref_builtin_has_content)
+---
+It is `true` if the variable exists (and isn't Java `null`) and is not "empty", otherwise it is `false`. The meaning of "empty" depends on the concrete case. This follows intuitive common-sense ideas. The following are empty: a string with 0 length, a [markup output value](https://freemarker.apache.org/docs/dgui_misc_autoescaping.html#dgui_misc_autoescaping_movalues) with 0 length markup, a sequence or hash with no sub variables, a collection which has passed the last element. If the value is not of any of these types, then it counts as non-empty if it's a number or a date or a boolean (e.g. `0` and `false` are not empty), otherwise it counts as empty. Note that when your data-model implements multiple template model interfaces you may get unexpected results. However, when in doubt you can use always use `expr!?size > 0` or `expr!?length > 0` instead of `expr?has_content`.
+
+This buit-in is exceptional in that you can use the parentheses trick like with the [default value operator](https://freemarker.apache.org/docs/dgui_template_exp.html#dgui_template_exp_missing_default). That is, you can write both `product.color?has_content` and `(product.color)?has_content`. The first doesn't handle the case when `product` is missing, the last does.
+"""

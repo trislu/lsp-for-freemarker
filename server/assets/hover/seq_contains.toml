@@ -1,0 +1,29 @@
+identifier = "seq_contains"
+category = "built-in"
+markdown = """
+# seq_contains
+---
+> category: [Built-ins for sequences](https://freemarker.apache.org/docs/ref_builtins_sequence.html#ref_builtin_seq_contains)
+---
+> __Note:__
+> The `seq_` prefix is required in the built-in name to differentiate it from the [contains built-in](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_contains) that searches a substring in a string (since a variable can be both string and sequence on the same time).
+
+Tells if the sequence contains the specified value (according the [== operator](https://freemarker.apache.org/docs/dgui_template_exp.html#dgui_template_exp_comparison) of the template language, not according Java's `Object.equals`). It has 1 parameter, the value to find. Example:
+```template
+<#assign x = ["red", 16, "blue", "cyan"]>
+"blue": ${x?seq_contains("blue")?string("yes", "no")}
+"yellow": ${x?seq_contains("yellow")?string("yes", "no")}
+16: ${x?seq_contains(16)?string("yes", "no")}
+"16": ${x?seq_contains("16")?string("yes", "no")}
+```
+The output will be:
+```output
+"blue": yes
+"yellow": no
+16: yes
+"16": no
+```
+To find the value the built-in uses FreeMarker's comparison rules (as if you was using [== operator](https://freemarker.apache.org/docs/dgui_template_exp.html#dgui_template_exp_comparison)), except that comparing two values of different types or of types for which FreeMarker doesn't support comparison will not cause error, just will be evaluated as the two values are not equal. Thus, you can use it only to find scalar values (i.e. string, number, boolean or date/time values). For other types the result will be always `false`.
+
+For fault tolerance, this built-in also works with collections.
+"""

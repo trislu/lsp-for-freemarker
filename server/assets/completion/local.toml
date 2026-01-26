@@ -1,0 +1,21 @@
+category = "directive"
+label = "local"
+insert_text = "local name=value>"
+documentation = """
+The `<#local>` directive, see the [directive reference](https://freemarker.apache.org/docs/ref_directive_local.html) for more info.
+
+---
+## Description
+It is similar to [assign directive](https://freemarker.apache.org/docs/ref_directive_assign.html#ref.directive.assign), but it creates or replaces local variables. This only works inside macro definitions and function definitions.
+
+For more information about variables, read this: [Template Author's Guide/Miscellaneous/Defining variables in the template](https://freemarker.apache.org/docs/dgui_misc_var.html)
+
+## Examples
+```
+<#local name=value>
+```
+or
+```
+<#local name1=value1 name2=value2 ... nameN=valueN>
+```
+"""

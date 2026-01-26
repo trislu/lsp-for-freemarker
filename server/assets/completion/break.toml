@@ -1,0 +1,6 @@
+category = "directive"
+label = "break"
+insert_text = "break>"
+documentation = """
+The `<#break>` directive, see the [list break](https://freemarker.apache.org/docs/ref_directive_ftl.html) and [switch break](https://freemarker.apache.org/docs/ref_directive_switch.html) for more info.
+"""

@@ -1,0 +1,35 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Extension",
+            "type": "extensionHost",
+            "request": "launch",
+            "debugWebWorkerHost": true,
+            "args": [
+                "--extensionDevelopmentPath=${workspaceFolder}/clients/vsce"
+            ],
+            "outFiles": [
+                "${workspaceFolder}/clients/vsce/**/*"
+            ],
+            "env": {
+                "__FTL_LSP_SERVER_DEBUG": "${workspaceFolder}/target/debug/ftl-lsp-server"
+            },
+            "autoAttachChildProcesses": true,
+            "preLaunchTask": "npm: build-server-and-client"
+        },
+        {
+            "name": "Attach to LSP server",
+            "type": "lldb",
+            "request": "attach",
+            //"pid": "${command:pickProcess}",
+            "program": "${workspaceFolder}/target/debug/ftl-lsp-server",
+            "sourceLanguages": [
+                "rust"
+            ]
+        }
+    ]
+}

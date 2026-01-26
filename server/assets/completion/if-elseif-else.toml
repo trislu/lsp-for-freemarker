@@ -1,0 +1,30 @@
+category = "directive"
+label = "if-elseif-else"
+insert_text = """if (condition)>
+  text or interpolation
+<#elseif (condition)>
+  text or interpolation
+<#else>
+  text or interpolation
+</#if>"""
+documentation = """
+The `<#if>` directive with `<#elseif>` and `<#else>`, see the [directive reference](https://freemarker.apache.org/docs/ref_directive_if.html) for more info.
+
+---
+## Description
+You can use `if`, `elseif` and `else` directives to conditionally skip a section of the template. The condition-s must evaluate to a boolean value, or else an error will abort template processing. The `elseif`-s and `else`-s must occur inside `if` (that is, between the `if` start-tag and end-tag). The `if` can contain any number of `elseif`-s (including 0) and at the end optionally one `else`.
+
+# Note
+When you want to test if `x > 0` or `x >= 0`, writing `<#if x > 0>` and `<#if x >= 0>` is **WRONG**, as the first `>` will close the `#if` tag. To work that around, write `<#if x gt 0>` or `<#if gte 0>`. Also note that if the comparison occurs inside parentheses, you will have no such problem, like `<#if foo.bar(x > 0)>` works as expected.
+
+## Examples
+```
+<#if x == 1>
+  x is 1
+<#elseif x == 2>
+  x is 2
+<#elseif x == 3>
+  x is 3
+</#if>
+```
+"""

@@ -1,0 +1,22 @@
+# category decides the usage
+category = "directive"
+# lable on the completion list
+label = "assign"
+# text to be insert, note the "<#" is omitted
+insert_text = "assign name1=value1 name2=value2>"
+# documentation in markdown format
+documentation = """
+The `<#assign>` directive, see the [directive reference](https://freemarker.apache.org/docs/ref_directive_assign.html) for more info.
+
+---
+## Description
+With this you can create a new variable, or replace an existing variable. Note that only top-level variables can be created/replaced (i.e. you can't create/replace `some_hash.subvar`, but `some_hash`).
+## Examples
+```
+<#assign name1=value1 name2=value2 ... nameN=valueN>
+```
+or
+```
+<#assign same as above... in namespacehash>
+```
+"""

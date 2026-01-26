@@ -1,0 +1,28 @@
+identifier = "values"
+category = "built-in"
+markdown = """
+# values
+---
+> category: [Built-ins for hashes](https://freemarker.apache.org/docs/ref_builtins_hash.html#ref_builtin_values)
+---
+A sequence that contains all the variables (the values in the key-value pairs) in the hash.
+
+```Template
+<#assign myHash = { "name": "mouse", "price": 50 }>
+<#list myHash?values as v>
+  ${v}
+</#list>
+```
+
+```Output
+  mouse
+  50
+```
+
+Note that not all hashes support this (ask the programmer if a certain hash allows this or not).
+
+As of the order in which the values are returned, the same applies as with the `keys` built-in; see there. Furthermore, it's not guaranteed that the order of the values corresponds to the order of the keys returned by the `keys` build-in.
+
+> __Note:__
+> To list both the keys and the values, you can use <#list attrs as key, value>...<#list>; see the [*list* directive](https://freemarker.apache.org/docs/ref_directive_list.html#ref.directive.list).
+"""

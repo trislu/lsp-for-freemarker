@@ -1,0 +1,18 @@
+category = "directive"
+label = "list"
+insert_text = """list sequence as item>
+    Part repeated for each item
+</#list>"""
+documentation = """
+The *`sequence`-aimed* `<#list>` directive, see the [directive reference](https://freemarker.apache.org/docs/ref_directive_list.html) for more info.
+
+---
+## Examples
+```
+<#list sequence as item>
+    Part repeated for each item
+</#list>
+```
+"""
+[label_details]
+detail = "(sequence)"

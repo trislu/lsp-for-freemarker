@@ -1,0 +1,18 @@
+category = "directive"
+label = "list-sep"
+insert_text = """list users as user>
+  <#-- seperate user with ", " -->
+  ${user}<#sep>, </#sep>
+</#list>"""
+documentation = """
+The `<#list>` directive, see the [directive reference](https://freemarker.apache.org/docs/ref_directive_list.html) for more info.
+
+---
+## Examples
+```
+<#list users as user>
+  <#-- seperate user with "," -->
+  ${user}<#sep>, </#sep>
+</#list>
+```
+"""

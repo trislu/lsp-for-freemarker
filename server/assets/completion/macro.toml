@@ -1,0 +1,18 @@
+category = "directive"
+label = "macro"
+insert_text = """macro macro_name param1 param2 paramN>
+  ...
+</#macro>"""
+documentation = """
+The `<#macro>` directive, see the [directive reference](https://freemarker.apache.org/docs/ref_directive_macro.html) for more info.
+
+---
+## Examples
+```
+<#macro test>
+  Test text
+</#macro>
+<#-- call the macro: -->
+<@test/>
+```
+"""
