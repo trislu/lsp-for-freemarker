@@ -7,7 +7,7 @@ use tower_lsp_server::{
     ls_types::{
         CompletionItem, CompletionItemKind, CompletionItemLabelDetails, CompletionOptions,
         CompletionOptionsCompletionItem, CompletionParams, CompletionResponse, Documentation,
-        InsertTextFormat, InsertTextMode, MarkupContent, MarkupKind,
+        InsertTextFormat, InsertTextMode, MarkupContent, MarkupKind, Position,
     },
 };
 
@@ -100,10 +100,10 @@ impl CompletionAsset {
     fn new() -> Self {
         let mut directive_completion: Vec<CompletionItem> = vec![];
         CompletionAssetPath::iter().for_each(|file| {
-            if let Some(item) = CompletionAssetItem::from_embed(&file) {
-                if item.category.as_str() == "directive" {
-                    directive_completion.push(item.as_directive_completion())
-                }
+            if let Some(item) = CompletionAssetItem::from_embed(&file)
+                && item.category.as_str() == "directive"
+            {
+                directive_completion.push(item.as_directive_completion())
             }
         });
         CompletionAsset {
@@ -134,11 +134,20 @@ pub fn completion_capability() -> CompletionOptions {
             "?".to_string(), // '?' --> trigger built-ins
             "@".to_string(), // "<@" --> trigger macro call
         ]),
-        all_commit_characters: None,
-        work_done_progress_options: Default::default(),
         completion_item: Some(CompletionOptionsCompletionItem {
             label_details_support: Some(true),
         }),
+        ..Default::default()
+    }
+}
+
+fn get_previous_character(source: &str, position: &Position) -> Option<char> {
+    // in rust how can I get the (row, col) character from a String
+    let mut lines = source.lines();
+    let line = lines.nth(position.line as usize).unwrap();
+    match position.character > 1 {
+        true => line.chars().nth(position.character as usize - 2),
+        false => None,
     }
 }
 
@@ -150,75 +159,63 @@ impl Completion for TextDocument {
         let position = params.text_document_position.position;
         let source = &self.rope.to_string();
         // in rust how can I get the (row, col) character from a String
-        let mut lines = source.lines();
-        let line = lines.nth(position.line as usize).unwrap();
-        let prev = match position.character > 1 {
-            true => line.chars().nth(position.character as usize - 2),
-            false => None,
-        };
+        let prev_char = get_previous_character(source, &position);
+        if prev_char.is_none() || params.context.is_none() {
+            return Ok(None);
+        }
+        let prev_char = prev_char.unwrap();
+        let ctx = params.context.unwrap();
+        if ctx.trigger_character.is_none() {
+            return Ok(None);
+        }
+        let trigger = ctx.trigger_character.unwrap();
         let mut result: Option<CompletionResponse> = None;
-        if params.context.is_some_and(|c| {
-            c.trigger_character.is_some_and(|trigger| {
-                match trigger.as_str() {
-                    "#" => {
-                        if prev.is_some_and(|c| c == '<') {
-                            // triggered by '<#', expect a directive keyword
-                            result = Some(CompletionResponse::Array(
-                                STATIC_ASSETS.directive_completion.clone(),
-                            ));
-                            return true;
-                        }
-                        false
-                    }
-                    "@" => {
-                        if prev.is_some_and(|c| c == '<') {
-                            // triggered by '<@', expect a macro call
-                            let imported_macros: Vec<CompletionItem> = self
-                                .analyze_result
-                                .macro_map
-                                .iter()
-                                .map(|(macro_name, macro_item)| CompletionItem {
-                                    label: macro_name.to_owned(),
-                                    kind: Some(CompletionItemKind::MODULE),
-                                    documentation: Some(Documentation::MarkupContent(
-                                        MarkupContent {
-                                            kind: MarkupKind::Markdown,
-                                            value: match macro_item {
-                                                MacroNamespace::Local(local_macro) => {
-                                                    let source_line =
-                                                        lines.nth(local_macro.row).unwrap();
-                                                    source_line.to_string()
-                                                }
-                                                MacroNamespace::Import(import_macro) => {
-                                                    format!(
-                                                        "```python\nimport \"{}\" as {}\n```",
-                                                        import_macro.path, macro_name
-                                                    )
-                                                }
-                                            },
-                                        },
-                                    )),
-                                    insert_text: Some(macro_name.to_owned()),
-                                    insert_text_format: Some(InsertTextFormat::SNIPPET),
-                                    insert_text_mode: Some(InsertTextMode::AS_IS),
-                                    ..Default::default()
-                                })
-                                .collect();
-                            result = Some(CompletionResponse::Array(imported_macros));
-                            return true;
-                        }
-                        false
-                    }
-                    "?" => {
-                        // triggered by '?', expect a built-in
-                        result = Some(CompletionResponse::Array(completion_for_builtin()));
-                        true
-                    }
-                    _ => false,
-                }
-            })
-        }) {
-            // trigger character is typed, but which might not need to
+
+        match trigger.as_str() {
+            "#" if prev_char == '<' => {
+                // triggered by '<#', expect a directive keyword
+                result = Some(CompletionResponse::Array(
+                    STATIC_ASSETS.directive_completion.clone(),
+                ));
+            }
+            "@" if prev_char == '<' => {
+                // triggered by '<@', expect a macro call
+                let imported_macros: Vec<CompletionItem> = self
+                    .analyze_result
+                    .macro_map
+                    .iter()
+                    .map(|(macro_name, macro_item)| CompletionItem {
+                        label: macro_name.to_owned(),
+                        kind: Some(CompletionItemKind::MODULE),
+                        documentation: Some(Documentation::MarkupContent(MarkupContent {
+                            kind: MarkupKind::Markdown,
+                            value: match macro_item {
+                                MacroNamespace::Local(local_macro) => {
+                                    let mut lines = source.lines();
+                                    let source_line = lines.nth(local_macro.row).unwrap();
+                                    source_line.to_string()
+                                }
+                                MacroNamespace::Import(import_macro) => {
+                                    format!(
+                                        "```python\nimport \"{}\" as {}\n```",
+                                        import_macro.path, macro_name
+                                    )
+                                }
+                            },
+                        })),
+                        insert_text: Some(macro_name.to_owned()),
+                        insert_text_format: Some(InsertTextFormat::SNIPPET),
+                        insert_text_mode: Some(InsertTextMode::AS_IS),
+                        ..Default::default()
+                    })
+                    .collect();
+                result = Some(CompletionResponse::Array(imported_macros));
+            }
+            "?" => {
+                // triggered by '?', expect a built-in
+                result = Some(CompletionResponse::Array(completion_for_builtin()));
+            }
+            _ => {}
         }
         Ok(result)
     }

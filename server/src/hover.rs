@@ -69,19 +69,19 @@ impl HoverAsset {
     fn new() -> Self {
         let mut built_in: HashMap<String, Hover> = HashMap::new();
         HoverAssetPath::iter().for_each(|file| {
-            if let Some(item) = HoverAssetItem::from_embed(&file) {
-                if item.category.as_str() == "built-in" {
-                    built_in.insert(
-                        item.identifier,
-                        Hover {
-                            contents: HoverContents::Markup(MarkupContent {
-                                kind: MarkupKind::Markdown,
-                                value: item.markdown.unwrap_or_default(),
-                            }),
-                            range: None,
-                        },
-                    );
-                }
+            if let Some(item) = HoverAssetItem::from_embed(&file)
+                && item.category.as_str() == "built-in"
+            {
+                built_in.insert(
+                    item.identifier,
+                    Hover {
+                        contents: HoverContents::Markup(MarkupContent {
+                            kind: MarkupKind::Markdown,
+                            value: item.markdown.unwrap_or_default(),
+                        }),
+                        range: None,
+                    },
+                );
             }
         });
         HoverAsset { built_in }

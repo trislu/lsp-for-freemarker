@@ -59,20 +59,20 @@ fn update_state(root: &Node, index: usize, line: &str, mut state: FormatState) -
                 node_cursor = parent;
             }
             // save the preset indentation for the top level directives
-            if state.indent == 0 {
-                if let Some(parent) = node.parent() {
-                    let _parentkind = parent.kind();
-                    let end_row = parent.end_position().row;
-                    let start_row = parent.start_position().row;
-                    if end_row > start_row {
-                        if state.preset.is_none() {
-                            state.preset = Some(col);
-                        }
-                    } else if col > 0 {
+            if state.indent == 0
+                && let Some(parent) = node.parent()
+            {
+                let _parentkind = parent.kind();
+                let end_row = parent.end_position().row;
+                let start_row = parent.start_position().row;
+                if end_row > start_row {
+                    if state.preset.is_none() {
                         state.preset = Some(col);
-                    } else {
-                        state.preset = None;
                     }
+                } else if col > 0 {
+                    state.preset = Some(col);
+                } else {
+                    state.preset = None;
                 }
             }
         }
