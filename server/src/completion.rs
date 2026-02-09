@@ -247,7 +247,7 @@ mod tests {
                 assert_eq!(label_details.detail.unwrap_or_default(), "(capture)");
                 assert!(label_details.description.is_none());
             }
-            None => assert!(false),
+            None => unreachable!(),
         }
     }
 
