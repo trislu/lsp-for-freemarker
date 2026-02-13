@@ -22,7 +22,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "macro_expansion"
+          "name": "macro_call"
         }
       ]
     },
@@ -1032,6 +1032,19 @@
           "value": "macro_begin"
         },
         {
+          "type": "FIELD",
+          "name": "macro_name",
+          "content": {
+            "type": "ALIAS",
+            "content": {
+              "type": "SYMBOL",
+              "name": "identifier"
+            },
+            "named": true,
+            "value": "macro_name"
+          }
+        },
+        {
           "type": "SYMBOL",
           "name": "macro_clause"
         },
@@ -1049,15 +1062,6 @@
     "macro_clause": {
       "type": "SEQ",
       "members": [
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "SYMBOL",
-            "name": "identifier"
-          },
-          "named": true,
-          "value": "macro_name"
-        },
         {
           "type": "FIELD",
           "name": "parameter",
@@ -1141,7 +1145,7 @@
         }
       ]
     },
-    "macro_expansion": {
+    "macro_call": {
       "type": "SEQ",
       "members": [
         {
@@ -5972,7 +5976,7 @@
     ],
     [
       "subscript_expression",
-      "macro_expansion"
+      "macro_call"
     ]
   ],
   "precedences": [

@@ -10,9 +10,10 @@ use tower_lsp_server::{
         CodeActionProviderCapability, Diagnostic, NumberOrString, TextEdit, Uri, WorkspaceEdit,
     },
 };
+use tracing::instrument;
 use tree_sitter_freemarker::grammar::Rule;
 
-use crate::{doc::TextDocument, protocol::Action};
+use crate::{reactor::Reactor, server::ActionFeature};
 
 #[allow(clippy::mutable_key_type)]
 fn create_fix_warning_action(
@@ -54,7 +55,8 @@ pub fn code_action_capability() -> CodeActionProviderCapability {
     })
 }
 
-impl Action for TextDocument {
+impl ActionFeature for Reactor {
+    #[instrument(skip_all)]
     async fn on_code_action(
         &self,
         params: CodeActionParams,

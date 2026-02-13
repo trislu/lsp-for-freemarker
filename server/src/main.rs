@@ -20,11 +20,13 @@ mod format;
 mod goto;
 mod hover;
 mod init;
-mod protocol;
+mod parser;
+mod reactor;
 mod server;
 mod symbol;
 mod tokenizer;
 mod utils;
+mod workspace;
 
 #[tokio::main]
 async fn main() {
@@ -52,7 +54,7 @@ async fn main() {
         // Disabled ANSI color codes for better compatibility with some terminals
         .with_ansi(false)
         // TODO: log level control
-        .with_max_level(LevelFilter::WARN)
+        .with_max_level(LevelFilter::INFO)
         // Build the subscriber
         .finish();
 

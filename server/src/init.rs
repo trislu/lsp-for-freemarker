@@ -8,9 +8,7 @@ use tower_lsp_server::ls_types::{
     TextDocumentSyncKind, WorkspaceFileOperationsServerCapabilities, WorkspaceServerCapabilities,
 };
 
-use crate::protocol::Initializer;
-
-use crate::server::Server;
+use crate::server::{Initializer, Server};
 use crate::{action, completion, diagnosis, folding, format, goto, hover, tokenizer};
 
 fn do_initialize() -> InitializeResult {

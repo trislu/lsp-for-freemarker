@@ -15,10 +15,10 @@ use once_cell::sync::Lazy;
 use rust_embed::Embed;
 use serde::Deserialize;
 use strum::IntoEnumIterator;
-use tree_sitter_freemarker::grammar::Builtin;
+use tree_sitter_freemarker::grammar::{Builtin, Rule};
 
-use crate::doc::TextDocument;
-use crate::{protocol::Completion, symbol::MacroNamespace};
+use crate::reactor::Reactor;
+use crate::server::CompletionFeature;
 
 #[derive(Embed)]
 #[folder = "assets/completion"]
@@ -141,33 +141,56 @@ pub fn completion_capability() -> CompletionOptions {
     }
 }
 
-fn get_previous_character(source: &str, position: &Position) -> Option<char> {
-    // in rust how can I get the (row, col) character from a String
-    let mut lines = source.lines();
-    let line = lines.nth(position.line as usize).unwrap();
-    match position.character > 1 {
-        true => line.chars().nth(position.character as usize - 2),
-        false => None,
+impl CompletionFeature for Reactor {
+    fn list_macro_definitions(&self) -> Vec<CompletionItem> {
+        let mut macro_definitions = vec![];
+        self.get_analysis().foreach_symbol(|symbol_name, symbols| {
+            let first_definition = symbols[0];
+            if matches!(first_definition.rule, Rule::MacroName | Rule::ImportAlias) {
+                macro_definitions.push(CompletionItem {
+                    label: symbol_name.to_owned(),
+                    kind: Some(CompletionItemKind::MODULE),
+                    documentation: Some(Documentation::MarkupContent(MarkupContent {
+                        kind: MarkupKind::Markdown,
+                        value: self
+                            .get_document()
+                            .get_ranged_text(first_definition.start_byte..first_definition.end_byte)
+                            .to_string(),
+                    })),
+                    insert_text: Some(symbol_name.to_owned()),
+                    insert_text_format: Some(InsertTextFormat::SNIPPET),
+                    insert_text_mode: Some(InsertTextMode::AS_IS),
+                    ..Default::default()
+                });
+            }
+        });
+        macro_definitions
     }
-}
 
-impl Completion for TextDocument {
     async fn on_completion(
         &self,
         params: CompletionParams,
     ) -> JsonRpcResult<Option<CompletionResponse>> {
+        if params
+            .context
+            .as_ref()
+            .is_none_or(|ctx| ctx.trigger_character.is_none())
+        {
+            return Ok(None);
+        }
+        // the position has point to 1 char after trigger
         let position = params.text_document_position.position;
-        let source = &self.rope.to_string();
-        // in rust how can I get the (row, col) character from a String
-        let prev_char = get_previous_character(source, &position);
-        if prev_char.is_none() || params.context.is_none() {
+        assert!(position.character > 0);
+        let trigger_position = Position {
+            line: position.line,
+            character: position.character - 1,
+        };
+        let prev_char = self.get_document().get_prev_char_at(&trigger_position);
+        if prev_char.as_ref().is_none() {
             return Ok(None);
         }
         let prev_char = prev_char.unwrap();
         let ctx = params.context.unwrap();
-        if ctx.trigger_character.is_none() {
-            return Ok(None);
-        }
         let trigger = ctx.trigger_character.unwrap();
         let mut result: Option<CompletionResponse> = None;
 
@@ -180,36 +203,7 @@ impl Completion for TextDocument {
             }
             "@" if prev_char == '<' => {
                 // triggered by '<@', expect a macro call
-                let imported_macros: Vec<CompletionItem> = self
-                    .analyze_result
-                    .macro_map
-                    .iter()
-                    .map(|(macro_name, macro_item)| CompletionItem {
-                        label: macro_name.to_owned(),
-                        kind: Some(CompletionItemKind::MODULE),
-                        documentation: Some(Documentation::MarkupContent(MarkupContent {
-                            kind: MarkupKind::Markdown,
-                            value: match macro_item {
-                                MacroNamespace::Local(local_macro) => {
-                                    let mut lines = source.lines();
-                                    let source_line = lines.nth(local_macro.row).unwrap();
-                                    source_line.to_string()
-                                }
-                                MacroNamespace::Import(import_macro) => {
-                                    format!(
-                                        "```python\nimport \"{}\" as {}\n```",
-                                        import_macro.path, macro_name
-                                    )
-                                }
-                            },
-                        })),
-                        insert_text: Some(macro_name.to_owned()),
-                        insert_text_format: Some(InsertTextFormat::SNIPPET),
-                        insert_text_mode: Some(InsertTextMode::AS_IS),
-                        ..Default::default()
-                    })
-                    .collect();
-                result = Some(CompletionResponse::Array(imported_macros));
+                result = Some(CompletionResponse::Array(self.list_macro_definitions()));
             }
             "?" => {
                 // triggered by '?', expect a built-in

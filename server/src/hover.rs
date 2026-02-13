@@ -7,18 +7,16 @@ use rust_embed::Embed;
 use serde::Deserialize;
 use std::{collections::HashMap, str::FromStr};
 use tower_lsp_server::{
-    jsonrpc::Result as JsonRpcResult,
+    jsonrpc,
     ls_types::{
         Hover, HoverContents, HoverParams, HoverProviderCapability, LanguageString, MarkedString,
         MarkupContent, MarkupKind,
     },
 };
-use tree_sitter::Point;
 use tree_sitter_freemarker::grammar::Rule;
 
-use crate::doc::TextDocument;
-use crate::symbol::MacroNamespace;
-use crate::{protocol::Hovering, utils};
+//use crate::symbol::MacroNamespace;
+use crate::{reactor::Reactor, server::HoverFeature, utils};
 
 #[derive(Embed)]
 #[folder = "assets/hover"]
@@ -94,62 +92,51 @@ pub fn hover_capability() -> HoverProviderCapability {
     HoverProviderCapability::Simple(true)
 }
 
-impl Hovering for TextDocument {
-    async fn on_hover(&self, params: HoverParams) -> JsonRpcResult<Option<Hover>> {
-        let ast = self.tree.as_ref().expect("ast should not be None");
-        let root = ast.root_node();
-        let source = &self.rope.to_string();
-        let point = Point {
-            row: params.text_document_position_params.position.line as usize,
-            column: params.text_document_position_params.position.character as usize,
-        };
-        let node = root.named_descendant_for_point_range(point, point);
-        if node.is_none() {
-            return Ok(None);
-        }
-        let node = node.unwrap();
-        if node.is_error() || node.is_missing() {
-            return Ok(None);
-        }
-        let rule = Rule::from_str(node.kind());
-        if rule.is_err() {
-            return Ok(None);
-        }
-        let rule = rule.unwrap();
-        let identifier = &source[node.start_byte()..node.end_byte()];
-        match rule {
-            Rule::BuiltinName => {
-                if let Some(hover) = STATIC_ASSETS.built_in.get(identifier) {
-                    return Ok(Some(Hover {
-                        contents: hover.contents.clone(),
-                        range: Some(utils::parser_node_to_document_range(&node)),
-                    }));
+impl HoverFeature for Reactor {
+    async fn on_hover(&self, params: HoverParams) -> jsonrpc::Result<Option<Hover>> {
+        let point =
+            utils::lsp_position_to_parser_point(&params.text_document_position_params.position);
+        if let Some(node) = self.get_parser().get_node_at_point(point)
+            && let Ok(rule) = Rule::from_str(node.kind())
+        {
+            return match rule {
+                Rule::BuiltinName => {
+                    let node_text = self
+                        .get_document()
+                        .get_ranged_text(node.start_byte()..node.end_byte());
+                    if let Some(hover) = STATIC_ASSETS.built_in.get(&node_text) {
+                        return Ok(Some(Hover {
+                            contents: hover.contents.clone(),
+                            range: Some(utils::parser_node_to_document_range(&node)),
+                        }));
+                    }
+                    return Ok(None);
                 }
-                return Ok(None);
-            }
-            Rule::MacroNamespace => {
-                if let Some(macro_namespace) = self.analyze_result.macro_map.get(identifier) {
-                    match macro_namespace {
-                        MacroNamespace::Local(_) => return Ok(None), // TODO: hover on local macro
-                        MacroNamespace::Import(imported_macro) => {
+                Rule::MacroNamespace => {
+                    let node_text = self
+                        .get_document()
+                        .get_ranged_text(node.start_byte()..node.end_byte());
+                    match self.get_analysis().find_symbol_definition(&node_text) {
+                        Ok(symbols) => {
+                            let sym = symbols[0];
+                            let range_text = self
+                                .get_document()
+                                .get_ranged_text(sym.start_byte..sym.end_byte);
                             return Ok(Some(Hover {
                                 contents: HoverContents::Scalar(MarkedString::LanguageString(
                                     LanguageString {
-                                        // javascript has syntax highlighting for "import ... as ..."
                                         language: "javascript".to_owned(),
-                                        value: format!(
-                                            r#"import "{}" as {}"#,
-                                            imported_macro.path, identifier
-                                        ),
+                                        value: range_text.to_owned(),
                                     },
                                 )),
                                 range: Some(utils::parser_node_to_document_range(&node)),
                             }));
                         }
+                        _ => Ok(None),
                     }
                 }
-            }
-            _ => (),
+                _ => Ok(None),
+            };
         }
         Ok(None)
     }
