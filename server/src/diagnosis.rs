@@ -52,7 +52,7 @@ impl Scenario {
         severity: DiagnosticSeverity::ERROR,
         code: "undefined_macro",
         source: SEMANTICS,
-        message: "macro definition not found",
+        message: "Macro definition not found.",
         href: DIRECTIVE_IMPORT,
     };
 
@@ -60,7 +60,7 @@ impl Scenario {
         severity: DiagnosticSeverity::INFORMATION,
         code: "identifier_has_backslash",
         source: SYNTAX,
-        message: "Reserved characters in the identifier must be escaped with a preceding backslash (\\), which decrease the readability, try best to avoid it.",
+        message: "Identifiers containing reserved characters require escaping with a backslash (\\), which can significantly reduce readability. Consider refactoring to avoid such identifiers.",
         href: TOPLEVEL_VARIABLE,
     };
 
@@ -68,7 +68,7 @@ impl Scenario {
         severity: DiagnosticSeverity::WARNING,
         code: "ambiguous_string_literal",
         source: SYNTAX,
-        message: "Even though it is a valid syntax for <#assign> and <#local>, using string literal as L-value is still toxic.",
+        message: "While using a string literal as an L-value is syntactically valid for <#assign> and <#local>, this practice is generally discouraged due to potential ambiguity and reduced maintainability.",
         href: DIRECTIVE_ASSIGN,
     };
 
@@ -76,7 +76,7 @@ impl Scenario {
         severity: DiagnosticSeverity::WARNING,
         code: "deprecated_equal_operator",
         source: SYNTAX,
-        message: "In the context of comparisons, use '==' for equality checks, '=' is a deprecated alternative.",
+        message: "For equality checks in comparisons, use '=='. The single '=' operator is deprecated for this purpose.",
         href: COMPARISION_EXPRESSION,
     };
 
@@ -84,7 +84,7 @@ impl Scenario {
         severity: DiagnosticSeverity::WARNING,
         code: "undocumented_close_tag",
         source: SYNTAX,
-        message: "Suggest using '>' as the close tag for non-capture <#assign>, '/>' is undocumented and wastes 1 more character.",
+        message: "For non-capture <#assign> directives, it is recommended to use '>' as the close tag. Using '/>' is undocumented and adds unnecessary characters.",
         href: DIRECTIVE_ASSIGN,
     };
 
@@ -92,7 +92,7 @@ impl Scenario {
         severity: DiagnosticSeverity::WARNING,
         code: "deprecated_list_break",
         source: SYNTAX,
-        message: "break is deprecated for most use cases, as it doesn't work well with <#sep> and item?has_next. Instead, use sequence?take_while(predicate) to cut the sequence before you list it.",
+        message: "<#break> is deprecated for most list-related use cases, as it can interfere with <#sep> and item?has_next. Instead, consider using sequence?take_while(predicate) to filter the sequence before iteration.",
         href: DIRECTIVE_LIST_BREAK,
     };
 
@@ -100,7 +100,7 @@ impl Scenario {
         severity: DiagnosticSeverity::ERROR,
         code: "unexpected_break_stmt",
         source: SYNTAX,
-        message: "<#break> can only be used within <#list> or <#switch>.",
+        message: "The <#break> directive can only be used within <#list> or <#switch> blocks.",
         href: DIRECTIVE_LIST_BREAK,
     };
 }
