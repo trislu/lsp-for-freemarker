@@ -172,27 +172,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ftl-lsp-server"
-version = "0.1.0"
-dependencies = [
- "once_cell",
- "ropey",
- "rust-embed",
- "serde",
- "strum",
- "strum_macros",
- "thiserror",
- "tokio",
- "toml",
- "tower-lsp-server",
- "tracing",
- "tracing-appender",
- "tracing-subscriber",
- "tree-sitter",
- "tree-sitter-freemarker",
-]
-
-[[package]]
 name = "futures"
 version = "0.3.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -357,6 +336,27 @@ dependencies = [
  "percent-encoding",
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "lsp-for-freemarker"
+version = "0.1.0"
+dependencies = [
+ "once_cell",
+ "ropey",
+ "rust-embed",
+ "serde",
+ "strum",
+ "strum_macros",
+ "thiserror",
+ "tokio",
+ "toml",
+ "tower-lsp-server",
+ "tracing",
+ "tracing-appender",
+ "tracing-subscriber",
+ "tree-sitter",
+ "tree-sitter-freemarker",
 ]
 
 [[package]]

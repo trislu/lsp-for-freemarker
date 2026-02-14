@@ -1,5 +1,5 @@
 [package]
-name = "ftl-lsp-server"
+name = "lsp-for-freemarker"
 version = "0.1.0"
 authors = ["Lu Kai <kai.f.lu@nokia.com>"]
 description = "A Freemarker Language Server implemented in Rust"
@@ -10,7 +10,7 @@ license.workspace = true
 rust-version.workspace = true
 
 [[bin]]
-name = "ftl-lsp-server"
+name = "lsp-for-freemarker"
 
 [dependencies]
 tree-sitter-freemarker = { path = "../parser/tree-sitter-freemarker" }

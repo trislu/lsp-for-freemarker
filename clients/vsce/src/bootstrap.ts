@@ -24,7 +24,7 @@ async function get_server(
     context: ExtensionContext
 ): Promise<string | undefined> {
     // check if the server path is configured explicitly
-    const explicitPath = process.env["__FTL_LSP_SERVER_DEBUG"];
+    const explicitPath = process.env["__LSP_SERVER_BIN"];
     if (explicitPath) {
         if (explicitPath.startsWith("~/")) {
             return os.homedir() + explicitPath.slice("~".length);
@@ -33,7 +33,7 @@ async function get_server(
     }
 
     const ext = process.platform === "win32" ? ".exe" : "";
-    const bundled = Uri.joinPath(context.extensionUri, "resources", "bin", `ftl-lsp-server${ext}`);
+    const bundled = Uri.joinPath(context.extensionUri, "resources", "bin", `lsp-for-freemarker${ext}`);
     const bundledExists = await fileExists(bundled);
 
     if (!bundledExists) {
