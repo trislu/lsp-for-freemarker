@@ -10,7 +10,7 @@ use tower_lsp_server::{
 };
 use tree_sitter::Point;
 
-use crate::{reactor::Reactor, server::FormatFeature};
+use crate::{reactor::Reactor, server::FormatFeature, window_log_info};
 
 #[derive(Clone, Copy)]
 struct FormatState {
@@ -86,8 +86,10 @@ pub fn formatting_capability() -> OneOf<bool, DocumentFormattingOptions> {
 impl FormatFeature for Reactor {
     async fn on_formatting(
         &self,
-        _: DocumentFormattingParams,
+        params: DocumentFormattingParams,
     ) -> JsonRpcResult<Option<Vec<TextEdit>>> {
+        let uri = params.text_document.uri;
+        window_log_info!(format!("on_formatting: {}", uri.to_string()));
         let mut state = FormatState {
             preset: None,
             indent: 0,
@@ -105,7 +107,7 @@ impl FormatFeature for Reactor {
                 // currently use 4 whitespaces as the indent step by default
                 formatted += &(" ".repeat(preset + state.indent * 4) + line.trim());
             } else {
-                formatted += &(line.to_owned());
+                formatted += line;
             }
             if index < line_count - 1 {
                 formatted += "\n";

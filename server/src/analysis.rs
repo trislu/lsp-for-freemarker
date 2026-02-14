@@ -8,7 +8,6 @@ use thiserror::Error;
 use tower_lsp_server::ls_types::{
     Diagnostic, FoldingRange, Range, RelatedFullDocumentDiagnosticReport, SemanticToken, Uri,
 };
-use tracing::instrument;
 use tree_sitter::{Node, Point};
 use tree_sitter_freemarker::grammar::Rule;
 
@@ -48,7 +47,6 @@ pub struct Analysis {
 
 // TODO: wrap parser methods and document methods
 impl Analysis {
-    #[instrument(skip_all)]
     pub fn new(doc: &TextDocument, parser: &TextParser) -> Self {
         let mut analysis = Analysis {
             ..Default::default()

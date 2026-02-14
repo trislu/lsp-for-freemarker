@@ -10,7 +10,7 @@ use tower_lsp_server::{
         CodeActionProviderCapability, Diagnostic, NumberOrString, TextEdit, Uri, WorkspaceEdit,
     },
 };
-use tracing::instrument;
+
 use tree_sitter_freemarker::grammar::Rule;
 
 use crate::{reactor::Reactor, server::ActionFeature};
@@ -56,7 +56,6 @@ pub fn code_action_capability() -> CodeActionProviderCapability {
 }
 
 impl ActionFeature for Reactor {
-    #[instrument(skip_all)]
     async fn on_code_action(
         &self,
         params: CodeActionParams,

@@ -1,3 +1,7 @@
+// Copyright 2025-2026 Nokia
+// Licensed under the BSD 3-Clause License.
+// SPDX-License-Identifier: BSD-3-Clause
+
 use tree_sitter::{InputEdit, Node, Parser, Point, Tree};
 
 #[derive(Default, Debug)]

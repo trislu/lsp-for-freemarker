@@ -9,13 +9,8 @@ import * as os from "os";
 
 export async function bootstrap(
     context: ExtensionContext
-): Promise<string> {
+): Promise<string | undefined> {
     const path = await get_server(context);
-    if (!path) {
-        throw new Error("freemarker-language-server is not available.");
-    }
-    const now = new Date().toLocaleString();
-    console.log(`[${now}] Using server binary at ${path}`);
     // TODO: check validity
     return path;
 }

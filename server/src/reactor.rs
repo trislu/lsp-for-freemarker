@@ -1,3 +1,7 @@
+// Copyright 2025-2026 Nokia
+// Licensed under the BSD 3-Clause License.
+// SPDX-License-Identifier: BSD-3-Clause
+
 use tower_lsp_server::ls_types::{TextDocumentContentChangeEvent, Uri};
 
 use crate::{
@@ -15,8 +19,6 @@ pub struct Reactor {
 }
 
 impl Reactor {
-    /// Creates a new document from the given text and language id. It creates
-    /// a rope, parser and syntax tree from the text.
     pub fn new(uri: &Uri, text: &str, version: i32) -> Self {
         let doc = TextDocument::new(uri, text);
         let parser = TextParser::new(text);
