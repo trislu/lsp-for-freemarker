@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 use once_cell::sync::Lazy;
-use rust_embed::Embed;
+use rust_embed::{Embed, EmbeddedFile};
 use serde::Deserialize;
 use std::{collections::HashMap, str::FromStr};
 use tower_lsp_server::{
@@ -19,7 +19,9 @@ use tree_sitter_freemarker::grammar::Rule;
 use crate::{reactor::Reactor, server::HoverFeature, utils};
 
 #[derive(Embed)]
-#[folder = "assets/hover"]
+#[folder = "assets/hover/"]
+#[include = "built-ins/*"]
+#[include = "types/*"]
 struct HoverAssetPath;
 
 #[derive(Debug, Default, Deserialize)]
@@ -48,41 +50,47 @@ impl HoverAssetItem {
     }
 
     #[tracing::instrument(skip_all)]
-    fn from_embed(file: &str) -> Option<HoverAssetItem> {
-        if let Some(completion_file) = HoverAssetPath::get(file) {
-            return HoverAssetItem::from_bytes(completion_file.data.as_ref());
-        }
-        tracing::error!("rust-embed file not found: {}:", file);
-        None
+    fn from_embed(file: EmbeddedFile) -> Option<HoverAssetItem> {
+        HoverAssetItem::from_bytes(file.data.as_ref())
     }
 }
 
 #[derive(Debug, Clone)]
 struct HoverAsset {
     built_in: HashMap<String, Hover>,
+    types: HashMap<String, Hover>,
     // TODO: other hovers
+}
+
+fn insert_to_hover_map(item: HoverAssetItem, hovers: &mut HashMap<String, Hover>) {
+    hovers.insert(
+        item.identifier,
+        Hover {
+            contents: HoverContents::Markup(MarkupContent {
+                kind: MarkupKind::Markdown,
+                value: item.markdown.unwrap_or_default(),
+            }),
+            range: None,
+        },
+    );
 }
 
 impl HoverAsset {
     fn new() -> Self {
         let mut built_in: HashMap<String, Hover> = HashMap::new();
+        let mut types: HashMap<String, Hover> = HashMap::new();
         HoverAssetPath::iter().for_each(|file| {
-            if let Some(item) = HoverAssetItem::from_embed(&file)
-                && item.category.as_str() == "built-in"
+            if let Some(embedded_file) = HoverAssetPath::get(&file)
+                && let Some(item) = HoverAssetItem::from_embed(embedded_file)
             {
-                built_in.insert(
-                    item.identifier,
-                    Hover {
-                        contents: HoverContents::Markup(MarkupContent {
-                            kind: MarkupKind::Markdown,
-                            value: item.markdown.unwrap_or_default(),
-                        }),
-                        range: None,
-                    },
-                );
+                match item.category.as_str() {
+                    "built-in" => insert_to_hover_map(item, &mut built_in),
+                    "types" => insert_to_hover_map(item, &mut types),
+                    _ => {}
+                }
             }
         });
-        HoverAsset { built_in }
+        HoverAsset { built_in, types }
     }
 }
 
@@ -100,6 +108,19 @@ impl HoverFeature for Reactor {
             && let Ok(rule) = Rule::from_str(node.kind())
         {
             return match rule {
+                Rule::Number | Rule::StringLiteral | Rule::BooleanTrue | Rule::BooleanFalse => {
+                    let rule_str = match matches!(rule, Rule::BooleanTrue | Rule::BooleanFalse) {
+                        true => "boolean",
+                        false => &rule.to_string(),
+                    };
+                    if let Some(hover) = STATIC_ASSETS.types.get(rule_str) {
+                        return Ok(Some(Hover {
+                            contents: hover.contents.clone(),
+                            range: Some(utils::parser_node_to_document_range(&node)),
+                        }));
+                    }
+                    return Ok(None);
+                }
                 Rule::BuiltinName => {
                     let node_text = self
                         .get_document()
@@ -141,7 +162,7 @@ impl HoverFeature for Reactor {
 
 #[cfg(test)]
 mod tests {
-    use crate::hover::{HoverAsset, HoverAssetItem};
+    use crate::hover::{HoverAsset, HoverAssetItem, HoverAssetPath};
 
     #[test]
     fn test_asset_builtin_from_str() {
@@ -161,7 +182,8 @@ markdown = """baz"""
 
     #[test]
     fn test_asset_builtin_from_file() {
-        if let Some(item) = HoverAssetItem::from_embed("built-ins/c.toml") {
+        let embedded_file = HoverAssetPath::get("built-ins/c.toml").expect("must success");
+        if let Some(item) = HoverAssetItem::from_embed(embedded_file) {
             assert_eq!(item.identifier, "c".to_string());
             assert_eq!(item.category, "built-in".to_string());
             assert!(item.markdown.is_some());
