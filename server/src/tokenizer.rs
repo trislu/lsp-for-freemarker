@@ -136,6 +136,7 @@ fn tokenize_from(node: &Node<'_>) -> Option<Token> {
             | Rule::ReturnBegin => Some(Token(TokenType::Keyword, range, None)),
             Rule::UndocumentedCloseTag => Some(Token(TokenType::Keyword, range, Some(DEPRECATED))),
             Rule::MacroBegin
+            | Rule::MacroCloseTag
             | Rule::MacroClose
             | Rule::MacroCallBegin
             | Rule::MacroCallEnd
@@ -155,7 +156,9 @@ fn tokenize_from(node: &Node<'_>) -> Option<Token> {
                 Some(Token(TokenType::Operator, range, Some(DEPRECATED)))
             }
             Rule::ParameterName => Some(Token(TokenType::Parameter, range, None)),
-            Rule::Variable | Rule::Identifier => Some(Token(TokenType::Variable, range, None)),
+            Rule::Variable | Rule::Identifier | Rule::MacroSpecs => {
+                Some(Token(TokenType::Variable, range, None))
+            }
             Rule::StringLiteral | Rule::ImportPath | Rule::AmbiguousStringLiteral => {
                 Some(Token(TokenType::String, range, None))
             }
