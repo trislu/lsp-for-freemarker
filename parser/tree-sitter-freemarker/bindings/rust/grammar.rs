@@ -85,8 +85,8 @@ pub enum Rule {
     MacroCall,
     #[strum(serialize = "macro_clause")]
     MacroClause,
-    #[strum(serialize = "macro_spec")]
-    MacroSpec,
+    #[strum(serialize = "macro_specs")]
+    MacroSpecs,
     #[strum(serialize = "macro_stmt")]
     MacroStmt,
     #[strum(serialize = "member_expression")]
@@ -195,6 +195,8 @@ pub enum Rule {
     MacroCallEnd,
     #[strum(serialize = "macro_close")]
     MacroClose,
+    #[strum(serialize = "macro_close_tag")]
+    MacroCloseTag,
     #[strum(serialize = "macro_name")]
     MacroName,
     #[strum(serialize = "macro_namespace")]

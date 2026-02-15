@@ -1872,7 +1872,11 @@
           "named": true
         },
         {
-          "type": "macro_spec",
+          "type": "macro_namespace",
+          "named": true
+        },
+        {
+          "type": "macro_specs",
           "named": true
         }
       ]
@@ -1924,14 +1928,14 @@
       "required": true,
       "types": [
         {
-          "type": "close_tag",
+          "type": "macro_close_tag",
           "named": true
         }
       ]
     }
   },
   {
-    "type": "macro_spec",
+    "type": "macro_specs",
     "named": true,
     "fields": {},
     "children": {
@@ -1940,10 +1944,6 @@
       "types": [
         {
           "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "macro_namespace",
           "named": true
         }
       ]
@@ -2961,6 +2961,10 @@
   },
   {
     "type": "macro_close",
+    "named": true
+  },
+  {
+    "type": "macro_close_tag",
     "named": true
   },
   {

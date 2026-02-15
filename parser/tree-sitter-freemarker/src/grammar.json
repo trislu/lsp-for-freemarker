@@ -1091,8 +1091,13 @@
           }
         },
         {
-          "type": "SYMBOL",
-          "name": "close_tag"
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "close_tag"
+          },
+          "named": true,
+          "value": "macro_close_tag"
         },
         {
           "type": "FIELD",
@@ -1104,44 +1109,6 @@
               "name": "_definition"
             }
           }
-        }
-      ]
-    },
-    "macro_spec": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "SYMBOL",
-            "name": "identifier"
-          },
-          "named": true,
-          "value": "macro_namespace"
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "REPEAT",
-              "content": {
-                "type": "SEQ",
-                "members": [
-                  {
-                    "type": "STRING",
-                    "value": "."
-                  },
-                  {
-                    "type": "SYMBOL",
-                    "name": "identifier"
-                  }
-                ]
-              }
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
         }
       ]
     },
@@ -1158,35 +1125,53 @@
           "value": "macro_call_begin"
         },
         {
-          "type": "SYMBOL",
-          "name": "macro_spec"
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "identifier"
+          },
+          "named": true,
+          "value": "macro_namespace"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "REPEAT",
+            "content": {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "."
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "identifier"
+                }
+              ]
+            }
+          },
+          "named": true,
+          "value": "macro_specs"
         },
         {
           "type": "FIELD",
           "name": "parameter",
           "content": {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "REPEAT",
-                "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "SYMBOL",
-                      "name": "_primary_expression"
-                    },
-                    {
-                      "type": "SYMBOL",
-                      "name": "assign_expression"
-                    }
-                  ]
+            "type": "REPEAT",
+            "content": {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "_primary_expression"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "assign_expression"
                 }
-              },
-              {
-                "type": "BLANK"
-              }
-            ]
+              ]
+            }
           }
         },
         {

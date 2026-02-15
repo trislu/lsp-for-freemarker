@@ -322,20 +322,15 @@ module.exports = grammar({
     macro_clause: $ => seq(
       field('parameter', optional(repeat(choice($.identifier, $.assign_expression)))),
       // TODO: support "..." syntax
-      $.close_tag,
+      alias($.close_tag, $.macro_close_tag),
       field('body', repeat($._definition)),
-    ),
-
-    macro_spec: $ => seq(
-      alias($.identifier, $.macro_namespace),
-      optional(repeat(
-        seq('.', $.identifier)))
     ),
 
     macro_call: $ => seq(
       alias('<@', $.macro_call_begin),
-      $.macro_spec,
-      field('parameter', optional(repeat(choice($._primary_expression, $.assign_expression)))),
+      alias($.identifier, $.macro_namespace),
+      alias(repeat(seq('.', $.identifier)), $.macro_specs),
+      field('parameter', repeat(choice($._primary_expression, $.assign_expression))),
       alias('/>', $.macro_call_end)
     ),
     /********** STATEMENT_END: "macro" **************/
