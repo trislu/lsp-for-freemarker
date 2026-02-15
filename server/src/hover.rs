@@ -161,7 +161,7 @@ markdown = """baz"""
 
     #[test]
     fn test_asset_builtin_from_file() {
-        if let Some(item) = HoverAssetItem::from_embed("c.toml") {
+        if let Some(item) = HoverAssetItem::from_embed("built-ins/c.toml") {
             assert_eq!(item.identifier, "c".to_string());
             assert_eq!(item.category, "built-in".to_string());
             assert!(item.markdown.is_some());
