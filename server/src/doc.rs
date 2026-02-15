@@ -87,6 +87,11 @@ impl TextDocument {
         source[range.start..range.end].to_owned()
     }
 
+    pub fn get_line_text(&self, index: usize) -> String {
+        let line = self.rope.line(index);
+        line.to_string()
+    }
+
     pub fn get_prev_char_at(&self, position: &Position) -> Option<char> {
         if let Some(line) = self.rope.get_line(position.line as usize)
             && position.character > 0

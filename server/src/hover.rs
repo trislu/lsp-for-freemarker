@@ -9,8 +9,8 @@ use std::{collections::HashMap, str::FromStr};
 use tower_lsp_server::{
     jsonrpc,
     ls_types::{
-        Hover, HoverContents, HoverParams, HoverProviderCapability, LanguageString, MarkedString,
-        MarkupContent, MarkupKind,
+        Hover, HoverContents, HoverParams, HoverProviderCapability, MarkedString, MarkupContent,
+        MarkupKind,
     },
 };
 use tree_sitter_freemarker::grammar::Rule;
@@ -119,15 +119,12 @@ impl HoverFeature for Reactor {
                     match self.get_analysis().find_symbol_definition(&node_text) {
                         Ok(symbols) => {
                             let sym = symbols[0];
-                            let range_text = self
+                            let definition_line = self
                                 .get_document()
-                                .get_ranged_text(sym.start_byte..sym.end_byte);
+                                .get_line_text(sym.range.start.line as usize);
                             return Ok(Some(Hover {
                                 contents: HoverContents::Scalar(MarkedString::LanguageString(
-                                    LanguageString {
-                                        language: "javascript".to_owned(),
-                                        value: range_text.to_owned(),
-                                    },
+                                    utils::ftl_to_rust(definition_line.trim()),
                                 )),
                                 range: Some(utils::parser_node_to_document_range(&node)),
                             }));
