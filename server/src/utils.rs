@@ -31,9 +31,7 @@ pub fn ftl_to_rust(ftl_text: &str) -> LanguageString {
     // for highlighting in hover
     let line_trimmed = ftl_text.trim();
     let mut result = String::from(line_trimmed);
-    if result.starts_with("<#import") {
-        result = result.replacen("<#", "", 1);
-    } else if result.starts_with("<#macro") {
+    if result.starts_with("<#import") || result.starts_with("<#macro") {
         result = result.replacen("<#", "", 1);
     }
     if result.ends_with('>') {
