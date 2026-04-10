@@ -2,12 +2,16 @@
   "name": "lsp-for-freemarker",
   "displayName": "Freemarker Template Language Support",
   "description": "Freemarker Template Language Support for Visual Studio Code",
-  "publisher": "nokia",
-  "private": true,
-  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nokia/lsp-for-freemarker"
+  },
+  "publisher": "Nokia",
+  "version": "0.1.0-rc.1",
   "engines": {
     "vscode": "^1.98.0"
   },
+  "icon": "resources/images/icon.png",
   "license": "BSD-3-Clause",
   "keywords": [
     "freemarker",
