@@ -1,0 +1,19 @@
+identifier = "datetime"
+category = "built-in"
+markdown = """
+# datetime
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_string_date)
+---
+> __Note:__
+> This built-in works both [on strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_string_date) and [on date/time/date-time values](https://freemarker.apache.org/docs/ref_builtins_date.html#ref_builtin_date_datetype).
+
+**For strings:** Converts the string value to a date-time value. It will expect the format specified by the `datetime_format` setting. You can also specify the format explicitly like `?datetime.format` or `?datetime("format")`.
+```template
+<#assign someDatetime = "Oct 25, 1995 03:05:00 PM"?datetime>
+<#assign someDatetime = "1995-10-25T15:05:00"?datetime.xs>
+<#assign someDatetime = "1995-10-25 03:05 PM"?datetime("yyyy-MM-dd hh:mm a")>
+```
+
+**For date/time/date-time values:** Marks the value as a date-time (both date and time).
+"""

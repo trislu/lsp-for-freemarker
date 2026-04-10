@@ -1,0 +1,12 @@
+identifier = "upper_abc"
+category = "built-in"
+markdown = """
+# upper_abc
+---
+> category: [Built-ins for numbers](https://freemarker.apache.org/docs/ref_builtins_number.html#ref_builtin_upper_abc)
+---
+> __Note:__
+> This built-in exists since FreeMarker 2.3.22.
+
+Same as `lower_abc`, but converts to upper case letters, like `"A"`, `"B"`, `"C"`, ..., `"AA"`, `"AB"`, etc.
+"""

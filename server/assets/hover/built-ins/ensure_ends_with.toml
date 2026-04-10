@@ -1,0 +1,12 @@
+identifier = "ensure_ends_with"
+category = "built-in"
+markdown = """
+# ensure_ends_with
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_ensure_ends_with)
+---
+> __Note:__
+> This built-in is available since FreeMarker 2.3.21.
+
+If the string doesn't end with the substring specified as the 1st parameter, it adds it after the string, otherwise it returns the original string. For example, both `"foo"?ensure_ends_with("/")` and `"foo/"?ensure_ends_with("/")` returns `"foo/"`.
+"""

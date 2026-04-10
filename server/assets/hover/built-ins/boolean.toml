@@ -1,0 +1,11 @@
+identifier = "boolean"
+category = "built-in"
+markdown = """
+# boolean
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_boolean)
+---
+The string converted to boolean value. The string must be `true` or `false` (case sensitive!), or must be in the format specified by the `boolean_format` setting.
+
+If the string is not in the appropriate format, an error will abort template processing when you try to access this built-in.
+"""

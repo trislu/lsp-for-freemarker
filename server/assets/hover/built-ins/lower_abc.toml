@@ -1,0 +1,20 @@
+identifier = "lower_abc"
+category = "built-in"
+markdown = """
+# lower_abc
+---
+> category: [Built-ins for numbers](https://freemarker.apache.org/docs/ref_builtins_number.html#ref_builtin_lower_abc)
+---
+> __Note:__
+> This built-in exists since FreeMarker 2.3.22.
+
+Converts `1`, `2`, `3`, etc., to the string `"a"`, `"b"`, `"c"`, etc. When reaching `"z"`, it continues like `"aa"`, `"ab"`, etc. This is the same logic that you can see in column labels in spreadsheet applications. The lowest allowed number is `1`.
+
+```template
+<#list 1..30 as n>${n?lower_abc} </#list>
+```
+Output:
+```output
+a b c d e f g h i j k l m n o p q r s t u v w x y z aa ab ac ad
+```
+"""

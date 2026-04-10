@@ -1,0 +1,13 @@
+identifier = "number_to_date"
+category = "built-in"
+markdown = """
+# number_to_date
+---
+> category: [Seldom used and expert built-ins](https://freemarker.apache.org/docs/ref_builtins_expert.html#ref_builtin_numToDate)
+---
+Converts a number (usually a Java `long`) to a date. This does the same as `new java.util.Date(long)` in Java — the number is interpreted as milliseconds since the epoch.
+
+```template
+${1305575275540?number_to_date}
+```
+"""

@@ -1,0 +1,23 @@
+identifier = "seq_last_index_of"
+category = "built-in"
+markdown = """
+# seq_last_index_of
+---
+> category: [Built-ins for sequences](https://freemarker.apache.org/docs/ref_builtins_sequence.html#ref_builtin_seq_last_index_of)
+---
+> __Note:__
+> This built-in is available since FreeMarker 2.3.1.
+
+> __Note:__
+> The `seq_` prefix is required in the built-in name to differentiate it from the [*last_index_of* built-in](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_last_index_of) that searches a substring in a string.
+
+Returns the index of the last occurrence of a value in the sequence, or `-1` if the sequence doesn't contain the specified value. That is, it is the same as `seq_index_of`, just it searches backward starting from the last item of the sequence.
+```template
+<#assign names = ["Joe", "Fred", "Joe", "Susan"]>
+${names?seq_last_index_of("Joe")}
+```
+Output:
+```output
+2
+```
+"""

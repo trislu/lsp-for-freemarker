@@ -1,0 +1,22 @@
+identifier = "empty_to_null"
+category = "built-in"
+markdown = """
+# empty_to_null
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_empty_to_null)
+---
+Returns missing value (Java `null`) if the value is a string with 0 length, or the value is missing (`null`, or an undefined variable). Otherwise it returns the string as is (without trimming).
+
+Example:
+```template
+${""?empty_to_null!"-"}
+${"a"?empty_to_null!"-"}
+```
+Output:
+```output
+-
+a
+```
+
+See also: `blank_to_null`, `trim_to_null`
+"""

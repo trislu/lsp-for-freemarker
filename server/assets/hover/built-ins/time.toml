@@ -1,0 +1,19 @@
+identifier = "time"
+category = "built-in"
+markdown = """
+# time
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_string_date)
+---
+> __Note:__
+> This built-in works both [on strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_string_date) and [on date/time/date-time values](https://freemarker.apache.org/docs/ref_builtins_date.html#ref_builtin_date_datetype).
+
+**For strings:** Converts the string value to a time value. It will expect the format specified by the `time_format` setting. You can also specify the format explicitly like `?time.format` or `?time("format")`.
+```template
+<#assign someTime = "3:05:30 PM"?time>
+<#assign someTime = "15:05:30"?time.xs>
+<#assign someTime = "15:05:30"?time("HH:mm:ss")>
+```
+
+**For date/time/date-time values:** Extracts the time part, discarding the date.
+"""

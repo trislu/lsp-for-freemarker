@@ -1,0 +1,23 @@
+identifier = "ceiling"
+category = "built-in"
+markdown = """
+# ceiling
+---
+> category: [Built-ins for numbers](https://freemarker.apache.org/docs/ref_builtins_number.html#ref_builtin_rounding)
+---
+Rounds the number upwards (i.e., towards positive infinity).
+
+```template
+${1.5?ceiling}
+${-1.5?ceiling}
+${0.25?ceiling}
+```
+Output:
+```output
+2
+-1
+1
+```
+
+See also: `round`, `floor`
+"""

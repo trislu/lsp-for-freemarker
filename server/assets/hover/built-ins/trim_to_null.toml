@@ -1,0 +1,22 @@
+identifier = "trim_to_null"
+category = "built-in"
+markdown = """
+# trim_to_null
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_trim_to_null)
+---
+Similar to the `trim` built-in, but when the result is an empty string, it instead returns a missing value (Java `null`). Also, if the value to trim is missing, it returns a missing value instead of failing.
+
+Example:
+```template
+${""?trim_to_null!"-"}
+${"  a  "?trim_to_null!"-"}
+```
+Output:
+```output
+-
+a
+```
+
+See also: `blank_to_null`, `empty_to_null`.
+"""

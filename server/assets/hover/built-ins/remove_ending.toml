@@ -1,0 +1,21 @@
+identifier = "remove_ending"
+category = "built-in"
+markdown = """
+# remove_ending
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_remove_ending)
+---
+> __Note:__
+> This built-in is available since FreeMarker 2.3.21.
+
+Removes the parameter substring from the ending of the string, or returns the original string if it doesn't end with the parameter substring. For example:
+```template
+${"abcdef"?remove_ending("def")}
+${"foobar"?remove_ending("def")}
+```
+Output:
+```output
+abc
+foobar
+```
+"""

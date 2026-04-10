@@ -1,0 +1,17 @@
+identifier = "replace"
+category = "built-in"
+markdown = """
+# replace
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_replace)
+---
+Replaces all occurrences of a string in the original string with another string. For example:
+```template
+${"this is a car acarus"?replace("car", "bulldozer")}
+```
+Output:
+```output
+this is a bulldozer abulldozerus
+```
+The replacing occurs in left-to-right order. `replace` accepts an optional *flags* parameter, as its 3rd parameter.
+"""

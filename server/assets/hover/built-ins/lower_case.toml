@@ -1,0 +1,11 @@
+identifier = "lower_case"
+category = "built-in"
+markdown = """
+# lower_case
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_lower_case)
+---
+The lower case version of the string, using rules that depend on the current `locale` (language, country). For example `"GrEEN MoUsE"?lower_case` will be `"green mouse"`.
+
+To convert to lower case for computer consumption (as opposed to human consumption), use the `c_lower_case` built-in instead!
+"""

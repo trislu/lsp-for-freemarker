@@ -1,0 +1,27 @@
+identifier = "left_pad"
+category = "built-in"
+markdown = """
+# left_pad
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_left_pad)
+---
+> __Note:__
+> This built-in is available since FreeMarker 2.3.1.
+
+If used with 1 parameter, it inserts spaces on the beginning of the string until it reaches the length specified as the parameter.
+```template
+[${"a"?left_pad(5)}]
+```
+Output:
+```output
+[    a]
+```
+If used with 2 parameters, the 2nd parameter specifies what to insert instead of space characters:
+```template
+[${"a"?left_pad(5, "-")}]
+```
+Output:
+```output
+[----a]
+```
+"""

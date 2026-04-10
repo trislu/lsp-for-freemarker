@@ -1,0 +1,11 @@
+identifier = "upper_case"
+category = "built-in"
+markdown = """
+# upper_case
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_upper_case)
+---
+The upper case version of the string, using rules that depend on the current `locale` (language, country). For example `"GrEEN MoUsE"?upper_case` will be `"GREEN MOUSE"`.
+
+To convert to upper case for computer consumption (as opposed to human consumption), use the `c_upper_case` built-in instead!
+"""

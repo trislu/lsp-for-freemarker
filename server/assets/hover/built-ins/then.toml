@@ -1,0 +1,24 @@
+identifier = "then"
+category = "built-in"
+markdown = """
+# then
+---
+> category: [Built-ins for booleans](https://freemarker.apache.org/docs/ref_builtins_boolean.html#ref_builtin_then)
+---
+> __Note:__
+> This built-in exists since FreeMarker 2.3.23.
+
+Used like `booleanExp?then(whenTrue, whenFalse)`, fills the same role as the ternary operator in C-like languages. If `booleanExp` evaluates to boolean true then it evaluates and returns its first argument, or else it evaluates and returns its second argument.
+
+An important special property is that only one of the argument expressions will be evaluated (lazy evaluation).
+
+```template
+<#assign x = 10>
+<#assign y = 20>
+${(x > y)?then(x, y)}
+```
+Output:
+```output
+20
+```
+"""

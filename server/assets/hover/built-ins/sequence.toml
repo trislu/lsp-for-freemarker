@@ -1,0 +1,17 @@
+identifier = "sequence"
+category = "built-in"
+markdown = """
+# sequence
+---
+> category: [Seldom used and expert built-ins](https://freemarker.apache.org/docs/ref_builtins_expert.html#ref_builtin_sequence)
+---
+Converts a listable value (one that you can iterate through with the `list` directive) to a more capable sequence value. Sequences support operations like `xs[index]` and `xs?size`. Also, the resulting value is listable multiple times, even if the original was backed by a `java.util.Iterator`.
+
+This built-in is typically used to work around data-model problems. If the value is already a sequence, it just returns it as is.
+
+```template
+<#assign usersSeq = users?sequence>
+<#list usersSeq as user>...</#list>
+Again: <#list usersSeq as user>...</#list>
+```
+"""

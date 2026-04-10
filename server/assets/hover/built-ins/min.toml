@@ -1,0 +1,17 @@
+identifier = "min"
+category = "built-in"
+markdown = """
+# min
+---
+> category: [Built-ins for sequences](https://freemarker.apache.org/docs/ref_builtins_sequence.html#ref_builtin_min_max)
+---
+Returns the smallest item of the sequence (or collection). The items must be either all numbers, or all date/time values of the same kind. Missing items (Java `null`-s) will be silently ignored. If the sequence is empty, the result is missing.
+
+```template
+${[1, 2, 3]?min}
+```
+Output:
+```output
+1
+```
+"""

@@ -1,0 +1,11 @@
+identifier = "c_lower_case"
+category = "built-in"
+markdown = """
+# c_lower_case
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_c_lower_case)
+---
+The string converted to lower case, for computer consumption ("c" as in the `c` built-in). Put simply, it will be converted to lower case as in English, regardless of the current `locale` (language, country). For example `"ITEM list"?c_lower_case` will be `"item list"`, always.
+
+For lower case conversion for human consumption use the `lower_case` built-in instead!
+"""

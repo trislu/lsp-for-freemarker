@@ -1,0 +1,21 @@
+identifier = "sort_by"
+category = "built-in"
+markdown = """
+# sort_by
+---
+> category: [Built-ins for sequences](https://freemarker.apache.org/docs/ref_builtins_sequence.html#ref_builtin_sort_by)
+---
+Returns the sequence of hashes sorted by the given hash subvariable in ascending order. The sub variables of the sequence must be hashes, and you have to give the name of a hash subvariable that will decide the order.
+
+```template
+<#assign ls = [
+  {"name":"whale", "weight":2000},
+  {"name":"Barbara", "weight":53},
+  {"name":"beetroot", "weight":0.3}
+]>
+<#list ls?sort_by("name") as i>
+- ${i.name}: ${i.weight}
+</#list>
+```
+If the subvariable is on a deeper level, use a sequence as parameter: `members?sort_by(['name', 'last'])`.
+"""

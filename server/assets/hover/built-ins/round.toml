@@ -1,0 +1,23 @@
+identifier = "round"
+category = "built-in"
+markdown = """
+# round
+---
+> category: [Built-ins for numbers](https://freemarker.apache.org/docs/ref_builtins_number.html#ref_builtin_rounding)
+---
+Rounds to the nearest whole number. If the number ends with .5, then it rounds upwards (i.e., towards positive infinity).
+
+```template
+${1.5?round}
+${-1.5?round}
+${1.75?round}
+```
+Output:
+```output
+2
+-1
+2
+```
+
+See also: `floor`, `ceiling`
+"""

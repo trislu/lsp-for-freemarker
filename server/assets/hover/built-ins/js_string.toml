@@ -1,0 +1,23 @@
+identifier = "js_string"
+category = "built-in"
+markdown = """
+# js_string
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_js_string)
+---
+Escapes the string with the escaping rules of JavaScript language string literals, so it's safe to insert the value into a string literal. Note that it will *not* add quotation marks around the inserted value.
+
+Example:
+```template
+<#assign user = "Big Joe's \"right hand\"">
+<script>
+  alert("Welcome ${user?js_string}!");
+</script>
+```
+Output:
+```output
+<script>
+  alert("Welcome Big Joe\\'s \"right hand\"!");
+</script>
+```
+"""

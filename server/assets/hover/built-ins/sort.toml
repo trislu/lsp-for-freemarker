@@ -1,0 +1,18 @@
+identifier = "sort"
+category = "built-in"
+markdown = """
+# sort
+---
+> category: [Built-ins for sequences](https://freemarker.apache.org/docs/ref_builtins_sequence.html#ref_builtin_sort)
+---
+Returns the sequence sorted in ascending order. (For descending order use this and then the `reverse` built-in.) This will work only if all sub variables are strings, or all are numbers, or all are date values, or all are booleans (since 2.3.17). If the sub variables are strings, it uses locale-specific lexical sorting.
+
+```template
+<#assign ls = ["whale", "Barbara", "zeppelin", "aardvark", "beetroot"]?sort>
+<#list ls as i>${i} </#list>
+```
+Output:
+```output
+aardvark Barbara beetroot whale zeppelin
+```
+"""

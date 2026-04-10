@@ -1,0 +1,9 @@
+identifier = "namespace"
+category = "built-in"
+markdown = """
+# namespace
+---
+> category: [Seldom used and expert built-ins](https://freemarker.apache.org/docs/ref_builtins_expert.html#ref_builtin_namespace)
+---
+Returns the namespace (i.e. the "gate" hash to the namespace) associated with a macro or function variable. You can use it with macros and functions only.
+"""

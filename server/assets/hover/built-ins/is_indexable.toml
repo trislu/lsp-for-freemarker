@@ -1,0 +1,11 @@
+identifier = "is_indexable"
+category = "built-in"
+markdown = """
+# is_indexable
+---
+> category: [Seldom used and expert built-ins](https://freemarker.apache.org/docs/ref_builtins_expert.html#ref_builtin_isType)
+---
+Returns `true` if the value is a sequence (supports `[index]` operator).
+
+*Historical quirk:* It returns `true` for Java methods as they implement the `[index]` operator.
+"""

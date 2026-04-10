@@ -1,0 +1,9 @@
+identifier = "chop_linebreak"
+category = "built-in"
+markdown = """
+# chop_linebreak
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_chop_linebreak)
+---
+Returns the string without the line-break at its very end if there was a line-break, otherwise the unchanged string. If the string ends with multiple line-breaks, only the last line-break is removed.
+"""

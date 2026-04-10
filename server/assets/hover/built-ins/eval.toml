@@ -1,0 +1,13 @@
+identifier = "eval"
+category = "built-in"
+markdown = """
+# eval
+---
+> category: [Seldom used and expert built-ins](https://freemarker.apache.org/docs/ref_builtins_expert.html#ref_builtin_eval)
+---
+Evaluates a string as an FTL expression. For example `"1+2"?eval` returns the number 3. (To render a template stored in a string, use the `interpret` built-in instead.)
+
+> **Warning:** Do not use this to evaluate JSON! For that use the `eval_json` built-in instead. Also, FTL expressions can access variables and call Java methods, so if you `?eval` strings from untrusted sources, it can become an attack vector.
+
+The evaluated expression sees the same variables (such as locals) that are visible at the place of the invocation of `eval`.
+"""

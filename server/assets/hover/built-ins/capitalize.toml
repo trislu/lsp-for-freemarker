@@ -1,0 +1,18 @@
+identifier = "capitalize"
+category = "built-in"
+markdown = """
+# capitalize
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_capitalize)
+---
+The string with all words capitalized. For the precise meaning of "word" see the `word_list` built-in. Example:
+```template
+${"  green  mouse"?capitalize}
+${"GreEN mouse"?capitalize}
+```
+Output:
+```output
+  Green Mouse
+Green Mouse
+```
+"""

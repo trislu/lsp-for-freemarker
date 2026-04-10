@@ -1,0 +1,16 @@
+identifier = "trim"
+category = "built-in"
+markdown = """
+# trim
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_trim)
+---
+The string without leading and trailing white-space. Example:
+```template
+(${"  green mouse  "?trim})
+```
+Output:
+```output
+(green mouse)
+```
+"""

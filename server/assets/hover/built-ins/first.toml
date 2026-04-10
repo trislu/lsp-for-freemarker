@@ -1,0 +1,11 @@
+identifier = "first"
+category = "built-in"
+markdown = """
+# first
+---
+> category: [Built-ins for sequences](https://freemarker.apache.org/docs/ref_builtins_sequence.html#ref_builtin_first)
+---
+Returns the first item of the sequence. Thus `value?first` is the same as `value[0]`, except that since FreeMarker 2.3.26, `value?first` also works if `value` doesn't support getting items with numerical index, but still supports being listed.
+
+If the sequence or collection is empty, the result will be a missing value (as in `empty?first!'No item was found'`).
+"""

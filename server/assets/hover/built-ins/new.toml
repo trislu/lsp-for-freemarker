@@ -1,0 +1,16 @@
+identifier = "new"
+category = "built-in"
+markdown = """
+# new
+---
+> category: [Seldom used and expert built-ins](https://freemarker.apache.org/docs/ref_builtins_expert.html#ref_builtin_new)
+---
+Creates a variable of a certain `TemplateModel` implementation. On the left side of `?` you specify a string with the full-qualified class name of a `TemplateModel` implementation. The result is a method variable that calls the constructor and returns the new variable.
+
+```template
+<#assign word_wrapp = "com.acmee.freemarker.WordWrapperDirective"?new()>
+<#assign word_wrapp_narrow = "com.acmee.freemarker.WordWrapperDirective"?new(40)>
+```
+
+> **Warning:** This built-in can be a security concern because the template author can create arbitrary Java objects.
+"""

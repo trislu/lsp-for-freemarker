@@ -1,0 +1,20 @@
+identifier = "interpret"
+category = "built-in"
+markdown = """
+# interpret
+---
+> category: [Seldom used and expert built-ins](https://freemarker.apache.org/docs/ref_builtins_expert.html#ref_builtin_interpret)
+---
+Parses a string as an FTL template, and returns a user-defined directive that executes that template, just as if a template with that content were `include`-d at that point.
+
+```template
+<#assign x=["a", "b", "c"]>
+<#assign templateSource = r"<#list x as y>${y}</#list>">
+<#assign inlineTemplate = templateSource?interpret>
+<@inlineTemplate />
+```
+Output:
+```output
+abc
+```
+"""

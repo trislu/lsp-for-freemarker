@@ -1,0 +1,9 @@
+identifier = "last"
+category = "built-in"
+markdown = """
+# last
+---
+> category: [Built-ins for sequences](https://freemarker.apache.org/docs/ref_builtins_sequence.html#ref_builtin_last)
+---
+The last subvariable of the sequence. Template processing will die with error if the sequence is empty.
+"""

@@ -1,0 +1,12 @@
+identifier = "is_nan"
+category = "built-in"
+markdown = """
+# is_nan
+---
+> category: [Built-ins for numbers](https://freemarker.apache.org/docs/ref_builtins_number.html#ref_builtin_is_nan)
+---
+> __Note:__
+> This built-in exists since FreeMarker 2.3.20.
+
+Tells if a number is floating point NaN (according to IEEE 754). For example, `someNumber?is_nan` evaluates to `true` or `false` depending on if the value of `someNumber` is NaN or not. If the underlying number is not of floating point type, this will always return `false`.
+"""

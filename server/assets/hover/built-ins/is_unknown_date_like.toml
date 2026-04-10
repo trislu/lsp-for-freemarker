@@ -1,0 +1,9 @@
+identifier = "is_unknown_date_like"
+category = "built-in"
+markdown = """
+# is_unknown_date_like
+---
+> category: [Seldom used and expert built-ins](https://freemarker.apache.org/docs/ref_builtins_expert.html#ref_builtin_isType)
+---
+Returns `true` if the value is date-like where we don't know if it's a date or a time or a date-time.
+"""

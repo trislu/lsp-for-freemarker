@@ -1,0 +1,23 @@
+identifier = "drop_while"
+category = "built-in"
+markdown = """
+# drop_while
+---
+> category: [Built-ins for sequences](https://freemarker.apache.org/docs/ref_builtins_sequence.html#ref_builtin_drop_while)
+---
+> __Note:__
+> This built-in is available since FreeMarker 2.3.29.
+
+Returns a new sequence that contains the elements from the input sequence starting from the first element that does *not* match the parameter predicate. After that, all elements are included regardless.
+
+```template
+<#assign xs = [1, 2, -3, 4, -5, 6]>
+<#list xs?drop_while(x -> x > 0) as x>${x} </#list>
+```
+Output:
+```output
+-3 4 -5 6
+```
+
+See also: `take_while`, `filter`
+"""

@@ -1,0 +1,11 @@
+identifier = "json_string"
+category = "built-in"
+markdown = """
+# json_string
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_json_string)
+---
+Escapes the string with the escaping rules of JSON language string literals, so it's safe to insert the value into a string literal. Note that it will *not* add quotation marks around the inserted value; you meant to use this inside the string literal.
+
+This will not escape `'` characters, since JSON strings must be quoted with `"`. The escaping rules are almost identical to those for `js_string`. The differences are that `'` is not escaped at all, that `>` is escaped as `\\u003E` (not as `\\>`), and that `\\uXXXX` escapes are used instead of `\\xXX` escapes.
+"""

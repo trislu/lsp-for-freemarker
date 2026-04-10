@@ -1,0 +1,25 @@
+identifier = "eval_json"
+category = "built-in"
+markdown = """
+# eval_json
+---
+> category: [Seldom used and expert built-ins](https://freemarker.apache.org/docs/ref_builtins_expert.html#ref_builtin_eval_json)
+---
+> __Note:__
+> This built-in is available since FreeMarker 2.3.31.
+
+Evaluates a string as a JSON expression, so that you can extract data from inside it.
+
+```template
+<#assign data = dataJson?eval_json>
+<p>Name: ${data.name}
+<p>Ids:
+<ul>
+  <#list data.ids as id>
+    <li>${id}
+  </#list>
+</ul>
+```
+
+The syntax is a superset of JSON (Java-style comments are supported). It's impossible to refer to variables, which is important for safety when receiving JSON from untrusted sources.
+"""

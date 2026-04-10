@@ -1,0 +1,9 @@
+identifier = "reverse"
+category = "built-in"
+markdown = """
+# reverse
+---
+> category: [Built-ins for sequences](https://freemarker.apache.org/docs/ref_builtins_sequence.html#ref_builtin_reverse)
+---
+The sequence with reversed order.
+"""

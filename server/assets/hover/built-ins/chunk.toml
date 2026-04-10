@@ -1,0 +1,22 @@
+identifier = "chunk"
+category = "built-in"
+markdown = """
+# chunk
+---
+> category: [Built-ins for sequences](https://freemarker.apache.org/docs/ref_builtins_sequence.html#ref_builtin_chunk)
+---
+Splits a sequence into multiple sequences of the size given with the 1st parameter. The result is the sequence of these sequences. The last sequence is possibly shorter unless the 2nd parameter is given as a fill value.
+
+```template
+<#assign seq = ['a', 'b', 'c', 'd', 'e', 'f', 'g']>
+<#list seq?chunk(3) as row>
+  <#list row as cell>${cell} </#list>
+</#list>
+```
+Output:
+```output
+  a b c
+  d e f
+  g
+```
+"""

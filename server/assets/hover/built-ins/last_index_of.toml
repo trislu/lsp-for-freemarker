@@ -1,0 +1,11 @@
+identifier = "last_index_of"
+category = "built-in"
+markdown = """
+# last_index_of
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_last_index_of)
+---
+Returns the index within this string of the last (rightmost) occurrence of the specified substring. For example: `"abcabc"?last_index_of("ab")` will return 3. Also, you can specify the index to start the search from. For example, `"abcabc"?last_index_of("ab", 2)` will return 0.
+
+If the 1st parameter does not occur as a substring in this string, then it returns -1.
+"""
