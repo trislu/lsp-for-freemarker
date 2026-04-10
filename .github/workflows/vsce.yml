@@ -1,0 +1,116 @@
+name: VSCE Package
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-linux-windows:
+    name: Build Linux & Windows binaries
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-gnu, x86_64-unknown-linux-musl
+
+      - name: Install cross-compilation dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-mingw-w64-x86-64 musl-tools
+
+      - name: Cache cargo dependencies
+        uses: Swatinem/rust-cache@v2
+
+      - name: Build for Windows x64
+        run: cargo build --release --target x86_64-pc-windows-gnu
+
+      - name: Build for Linux x64
+        run: cargo build --release --target x86_64-unknown-linux-musl
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: binaries-linux-windows
+          path: |
+            target/x86_64-pc-windows-gnu/release/lsp-for-freemarker.exe
+            target/x86_64-unknown-linux-musl/release/lsp-for-freemarker
+
+  build-macos:
+    name: Build macOS binary
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo dependencies
+        uses: Swatinem/rust-cache@v2
+
+      - name: Build for macOS arm64
+        run: cargo build --release
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: binaries-macos
+          path: target/release/lsp-for-freemarker
+
+  package:
+    name: Package VSIX
+    runs-on: ubuntu-latest
+    needs: [build-linux-windows, build-macos]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download Linux & Windows binaries
+        uses: actions/download-artifact@v4
+        with:
+          name: binaries-linux-windows
+          path: artifacts/linux-windows
+
+      - name: Download macOS binary
+        uses: actions/download-artifact@v4
+        with:
+          name: binaries-macos
+          path: artifacts/macos
+
+      - name: Copy server binaries
+        run: |
+          mkdir -p clients/vsce/resources/bin
+          cp artifacts/linux-windows/target/x86_64-pc-windows-gnu/release/lsp-for-freemarker.exe clients/vsce/resources/bin/lsp-for-freemarker-win32.exe
+          cp artifacts/linux-windows/target/x86_64-unknown-linux-musl/release/lsp-for-freemarker clients/vsce/resources/bin/lsp-for-freemarker-linux
+          cp artifacts/macos/target/release/lsp-for-freemarker clients/vsce/resources/bin/lsp-for-freemarker-darwin
+          chmod +x clients/vsce/resources/bin/lsp-for-freemarker-linux
+          chmod +x clients/vsce/resources/bin/lsp-for-freemarker-darwin
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install npm dependencies
+        working-directory: clients/vsce
+        run: npm install
+
+      - name: Install vsce
+        run: npm install -g @vscode/vsce
+
+      - name: Package VSIX
+        working-directory: clients/vsce
+        run: |
+          mkdir -p ../../output
+          vsce package -o ../../output/
+
+      - name: Upload VSIX artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: vsix-packages
+          path: output/*.vsix
