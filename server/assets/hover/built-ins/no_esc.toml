@@ -1,0 +1,24 @@
+identifier = "no_esc"
+category = "built-in"
+markdown = """
+# no_esc
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_no_esc)
+---
+> __Note:__
+> This built-in is available since FreeMarker 2.3.24.
+
+Prevents the auto-escaping of a value. For example:
+```template
+<#ftl output_format="HTML">
+<#assign s = "<b>Test</b>">
+${s}
+${s?no_esc}
+```
+Output:
+```output
+&lt;b&gt;Test&lt;/b&gt;
+<b>Test</b>
+```
+This works by converting the string value to a markup output value, which uses the string as the markup as is, and belongs to the current output format at the point of the invocation.
+"""

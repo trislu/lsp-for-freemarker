@@ -1,0 +1,23 @@
+identifier = "keep_after"
+category = "built-in"
+markdown = """
+# keep_after
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_keep_after)
+---
+> __Note:__
+> This built-in is available since FreeMarker 2.3.21.
+
+Removes the part of the string that is not after the first occurrence of the given substring. For example:
+```template
+${"abcdefgh"?keep_after("de")}
+```
+Output:
+```output
+fgh
+```
+If the parameter string is not found, it will return an empty string. This method accepts an optional *flags* parameter, as its 2nd parameter:
+```template
+${"foo : bar"?keep_after(r"\\s*:\\s*", "r")}
+```
+"""

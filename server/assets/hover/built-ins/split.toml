@@ -1,0 +1,21 @@
+identifier = "split"
+category = "built-in"
+markdown = """
+# split
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_split)
+---
+Splits a string into a sequence of strings along the occurrences of another string. For example:
+```template
+<#list "someMOOtestMOOtext"?split("MOO") as x>
+- ${x}
+</#list>
+```
+Output:
+```output
+- some
+- test
+- text
+```
+`split` accepts an optional *flags* parameter, as its 2nd parameter. If the 1st parameter is an empty string, the string will be split to characters.
+"""

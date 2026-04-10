@@ -27,8 +27,9 @@ async function get_server(
         return explicitPath;
     }
 
-    const ext = process.platform === "win32" ? ".exe" : "";
-    const bundled = Uri.joinPath(context.extensionUri, "resources", "bin", `lsp-for-freemarker${ext}`);
+    const platform = process.platform;
+    const ext = platform === "win32" ? ".exe" : "";
+    const bundled = Uri.joinPath(context.extensionUri, "resources", "bin", `lsp-for-freemarker-${platform}${ext}`);
     const bundledExists = await fileExists(bundled);
 
     if (!bundledExists) {

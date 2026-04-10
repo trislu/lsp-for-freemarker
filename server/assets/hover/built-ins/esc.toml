@@ -1,0 +1,23 @@
+identifier = "esc"
+category = "built-in"
+markdown = """
+# esc
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_esc)
+---
+> __Note:__
+> This built-in is available since FreeMarker 2.3.24.
+
+Escapes the value with the current output format, and prevents the auto-escaping of the returned value (to avoid double escaping). Because of auto-escaping, you usually only need this where auto-escaping was disabled:
+```template
+<#ftl output_format="HTML" auto_esc=false>
+<#assign s = "R&D">
+${s}
+${s?esc}
+```
+Output:
+```output
+R&D
+R&amp;D
+```
+"""

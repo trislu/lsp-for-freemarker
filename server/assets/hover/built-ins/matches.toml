@@ -1,0 +1,24 @@
+identifier = "matches"
+category = "built-in"
+markdown = """
+# matches
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_matches)
+---
+This built-in determines if the string exactly matches the pattern. Also, it returns the list of matching sub-strings. The return value is a multi-type value:
+
++ **Boolean**: `true`, if the entire string matches the pattern, otherwise `false`. For example, `"fooo"?matches('fo*')` is `true`, but `"fooo bar"?matches('fo*')` is `false`.
++ **Sequence**: the list of matched substrings of the string.
+
+Example:
+```template
+<#assign res = "foo bar fyo"?matches("f.?o")>
+<#if res>Matches.<#else>Does not match.</#if>
+Matching sub-strings:
+<#list res as m>
+- ${m}
+</#list>
+```
+
+If the regular expression contains groups (parentheses), then you can access them with the `groups` built-in. `matches` accepts an optional 2nd parameter, the *flags*.
+"""

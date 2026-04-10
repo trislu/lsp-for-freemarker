@@ -1,0 +1,18 @@
+identifier = "cap_first"
+category = "built-in"
+markdown = """
+# cap_first
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_cap_first)
+---
+The string with the very first word of the string capitalized. For the precise meaning of "word" see the `word_list` built-in. Example:
+```template
+${"  green mouse"?cap_first}
+${"GreEN mouse"?cap_first}
+```
+Output:
+```output
+  Green mouse
+GreEN mouse
+```
+"""

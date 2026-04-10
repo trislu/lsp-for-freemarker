@@ -1,0 +1,21 @@
+identifier = "url"
+category = "built-in"
+markdown = """
+# url
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_url)
+---
+> __Note:__
+> This built-in is available since FreeMarker 2.3.1.
+
+The string after URL escaping. All non-US-ASCII and reserved URL characters will be escaped with `%XX`. For example:
+```template
+<#assign x = 'a/b c'>
+${x?url}
+```
+Output:
+```output
+a%2Fb%20c
+```
+It escapes all reserved URL characters (`/`, `=`, `&`, etc.), so this encoding can be used for encoding query parameter values.
+"""

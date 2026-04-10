@@ -1,0 +1,21 @@
+identifier = "right_pad"
+category = "built-in"
+markdown = """
+# right_pad
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_right_pad)
+---
+> __Note:__
+> This built-in is available since FreeMarker 2.3.1.
+
+This is the same as `left_pad`, but it inserts the characters at the end of the string instead of the beginning.
+```template
+[${"a"?right_pad(5)}]
+[${"a"?right_pad(5, "-")}]
+```
+Output:
+```output
+[a    ]
+[a----]
+```
+"""

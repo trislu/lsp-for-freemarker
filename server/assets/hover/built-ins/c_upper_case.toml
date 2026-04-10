@@ -1,0 +1,11 @@
+identifier = "c_upper_case"
+category = "built-in"
+markdown = """
+# c_upper_case
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_c_upper_case)
+---
+The string converted to upper case, for computer consumption ("c" as in the `c` built-in). Put simply, it will be converted to upper case as in English, regardless of the current `locale` (language, country). For example `"ITEM list"?c_upper_case` will be `"ITEM LIST"`, always.
+
+For upper case conversion for human consumption use the `upper_case` built-in instead!
+"""

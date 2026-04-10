@@ -1,0 +1,19 @@
+identifier = "groups"
+category = "built-in"
+markdown = """
+# groups
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_groups)
+---
+This is used only with the result of the `matches` built-in. See `matches` for details.
+
+The first item in the sequence that `groups` returns is the whole substring matched by the regular expression. Hence, the index of the first explicit regular expression group is 1, and not 0.
+
+```template
+<#assign res = "John Doe"?matches(r"(\\w+) (\\w+)")>
+<#if res>
+  First name: ${res?groups[1]}
+  Second name: ${res?groups[2]}
+</#if>
+```
+"""

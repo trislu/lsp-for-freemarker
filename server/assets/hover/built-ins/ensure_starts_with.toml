@@ -1,0 +1,14 @@
+identifier = "ensure_starts_with"
+category = "built-in"
+markdown = """
+# ensure_starts_with
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_ensure_starts_with)
+---
+> __Note:__
+> This built-in is available since FreeMarker 2.3.21.
+
+If the string doesn't start with the substring specified as the 1st parameter, it adds it before the string, otherwise it returns the original string. For example, both `"foo"?ensure_starts_with("/")` and `"/foo"?ensure_starts_with("/")` returns `"/foo"`.
+
+If you specify two parameters, then the 1st parameter is interpreted as a Java regular expression, and if it doesn't match the beginning of the string, then the string specified as the 2nd parameter is added before the string. For example `someURL?ensure_starts_with("[a-zA-Z]+://", "http://")` will check if the string starts with something that matches `"[a-zA-Z]+://"`, and if it doesn't, it prepends `"http://"`.
+"""

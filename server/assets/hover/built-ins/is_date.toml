@@ -1,0 +1,9 @@
+identifier = "is_date"
+category = "built-in"
+markdown = """
+# is_date
+---
+> category: [Seldom used and expert built-ins](https://freemarker.apache.org/docs/ref_builtins_expert.html#ref_builtin_isType)
+---
+Don't use it! Same as `is_date_like`, use that instead. Later may change meaning to date-only.
+"""

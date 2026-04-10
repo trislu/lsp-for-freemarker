@@ -1,0 +1,16 @@
+identifier = "api"
+category = "built-in"
+markdown = """
+# api
+---
+> category: [Seldom used and expert built-ins](https://freemarker.apache.org/docs/ref_builtins_expert.html#ref_buitin_api_and_has_api)
+---
+> __Note:__
+> This built-in exists since FreeMarker 2.3.22.
+
+`value?api` provides access to the API (usually, the Java API) of `value`, like `value?api.someJavaMethod()`. This is meant to be used rarely, when you need to call a Java method that the simplistic FreeMarker view hides.
+
+For example, `myMap?api.myMethod()` translates to `myMap.myMethod()` in Java.
+
+You should avoid using `api` and rely on FTL types and built-ins. The `api_builtin_enabled` configuration setting must be `true` to use this.
+"""

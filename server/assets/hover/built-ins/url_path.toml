@@ -1,0 +1,12 @@
+identifier = "url_path"
+category = "built-in"
+markdown = """
+# url_path
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_url_path)
+---
+> __Note:__
+> This built-in is available since FreeMarker 2.3.21.
+
+This is the same as the `url` built-in, except that it doesn't escape slash (`/`) characters. This is meant to be used for converting paths that use slash to a path that can be inserted into a URL.
+"""

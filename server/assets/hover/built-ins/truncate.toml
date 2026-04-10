@@ -1,0 +1,19 @@
+identifier = "truncate"
+category = "built-in"
+markdown = """
+# truncate
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_truncate)
+---
+Cuts off the end of a string if that's necessary to keep it under the length given as parameter, and appends a terminator string (`[...]` by default) to indicate that the string was truncated.
+
+```template
+<#assign longName='This is a too long name'>
+${longName?truncate(16)}
+```
+Output:
+```output
+This is a [...]
+```
+Variants: `truncate_w` (always word boundary), `truncate_c` (any character boundary), `truncate_m`, `truncate_w_m`, `truncate_c_m` (markup terminator variants). An optional 2nd parameter specifies the terminator string.
+"""

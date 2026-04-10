@@ -1,0 +1,12 @@
+identifier = "cn"
+category = "built-in"
+markdown = """
+# cn
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_cn_string)
+---
+> __Note:__
+> The `cn` built-in also works on [numbers](https://freemarker.apache.org/docs/ref_builtins_number.html#ref_builtin_cn) and [booleans](https://freemarker.apache.org/docs/ref_builtins_boolean.html).
+
+This does the same as the `c` built-in, but when applied on a `null`/missing value, it will output a `null` value according the `c_format` setting. For example, for "JSON" `c_format`, it outputs `null`.
+"""

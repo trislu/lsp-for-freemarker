@@ -1,0 +1,12 @@
+identifier = "abs"
+category = "built-in"
+markdown = """
+# abs
+---
+> category: [Built-ins for numbers](https://freemarker.apache.org/docs/ref_builtins_number.html#ref_builtin_abs)
+---
+> __Note:__
+> This built-in exists since FreeMarker 2.3.20.
+
+Gives the absolute value of a number. For example `x?abs`, if `x` is -5, will evaluate to 5.
+"""

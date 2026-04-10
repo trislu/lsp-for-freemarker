@@ -1,0 +1,19 @@
+identifier = "j_string"
+category = "built-in"
+markdown = """
+# j_string
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_j_string)
+---
+Escapes the string with the escaping rules of Java language string literals, so it's safe to insert the value into a string literal. Note that it will *not* add quotation marks around the inserted value; you meant to use this inside the string literal.
+
+Example:
+```template
+<#assign beanName = 'The "foo" bean.'>
+String BEAN_NAME = "${beanName?j_string}";
+```
+Output:
+```output
+String BEAN_NAME = "The \"foo\" bean.";
+```
+"""

@@ -1,0 +1,12 @@
+identifier = "markup_string"
+category = "built-in"
+markdown = """
+# markup_string
+---
+> category: [Seldom used and expert built-ins](https://freemarker.apache.org/docs/ref_builtins_expert.html#ref_builtin_markup_string)
+---
+> __Note:__
+> This built-in is available since FreeMarker 2.3.24.
+
+Returns the markup stored inside a markup output value as a string. This is useful if the value has to be passed to a Java method for a `String` parameter, or if we want to manipulate the markup directly in the template. The resulting string can be converted back to markup output value with `?no_esc`.
+"""

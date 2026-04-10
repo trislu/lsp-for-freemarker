@@ -1,0 +1,13 @@
+identifier = "absolute_template_name"
+category = "built-in"
+markdown = """
+# absolute_template_name
+---
+> category: [Seldom used and expert built-ins](https://freemarker.apache.org/docs/ref_builtins_expert.html#ref_builtin_absolute_template_name)
+---
+Converts a template name to an absolute name, which can be safely passed to `<#include name>` or `<#import name as ns>` in another template, as it won't be misinterpreted to be relative to the directory of the template that contains the `include`/`import`.
+
+For example, if you are in template `"dir/here.ftl"`, then `"target.ftl"` is converted to `"/dir/target.ftl"` (note the initial `/`).
+
+Optionally, you can specify a root based name as a parameter that will be used instead of the name of the current template.
+"""

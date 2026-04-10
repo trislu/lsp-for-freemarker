@@ -1,0 +1,23 @@
+identifier = "with_args"
+category = "built-in"
+markdown = """
+# with_args
+---
+> category: [Seldom used and expert built-ins](https://freemarker.apache.org/docs/ref_builtins_expert.html#ref_builtin_with_args)
+---
+> __Note:__
+> This built-in is available since FreeMarker 2.3.30.
+
+Adds parameters dynamically to the call of a directive (like a macro), function, or method. Dynamically means that parameters are added based on a hash value (like `{'a': 1, 'b': 2}`) or a sequence value (like `[1, 2, 3]`).
+
+```template
+<#macro m a b c>a=${a}, b=${b}, c=${c}</#macro>
+<@m?with_args({'a': 1, 'b': 2, 'c': 3}) />
+```
+Output:
+```output
+a=1, b=2, c=3
+```
+
+Arguments from `with_args(...)` are added *before* the arguments specified in the call. For adding them at the end, use `with_args_last`.
+"""

@@ -1,0 +1,17 @@
+identifier = "blank_to_null"
+category = "built-in"
+markdown = """
+# blank_to_null
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_blank_to_null)
+---
+Returns missing value (Java `null`) if the value is a string with 0 length, or contains only whitespace characters, or the value is missing (`null`, or an undefined variable). Otherwise it returns the string as is (without trimming). As it reduces blank strings to a missing value (Java `null`), this lets you uniformly handle blanks the same as missing values, with the missing value handler operators.
+
+Example:
+```template
+${"   "?blank_to_null!"-"}
+${"a"?blank_to_null!"-"}
+```
+
+See also: `empty_to_null`, `trim_to_null`
+"""

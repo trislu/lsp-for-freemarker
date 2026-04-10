@@ -1,0 +1,23 @@
+identifier = "with_args_last"
+category = "built-in"
+markdown = """
+# with_args_last
+---
+> category: [Seldom used and expert built-ins](https://freemarker.apache.org/docs/ref_builtins_expert.html#ref_builtin_with_args_last)
+---
+> __Note:__
+> This built-in is available since FreeMarker 2.3.30.
+
+Same as `with_args`, but the order of arguments may differ. Arguments from `with_args_last(...)` are added *after* the arguments specified in the call. This only matters when passing parameters by position (typically, when calling functions or methods).
+
+```template
+<#function f a b c d>
+  <#return "a=${a}, b=${b}, c=${c}, d=${d}">
+</#function>
+${f?with_args_last([3, 4])(1, 2)}
+```
+Output:
+```output
+a=1, b=2, c=3, d=4
+```
+"""

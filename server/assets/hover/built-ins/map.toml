@@ -1,0 +1,18 @@
+identifier = "map"
+category = "built-in"
+markdown = """
+# map
+---
+> category: [Built-ins for sequences](https://freemarker.apache.org/docs/ref_builtins_sequence.html#ref_builtin_map)
+---
+> __Note:__
+> This built-in is available since FreeMarker 2.3.29.
+
+Returns a new sequence where all elements are replaced with the result of the parameter lambda, function, or method.
+
+```template
+<#assign userNames = users?map(user -> user.name)>
+```
+
+The parameter works like the parameter of the `filter` built-in, except that the lambda/function/method can return values of any type.
+"""

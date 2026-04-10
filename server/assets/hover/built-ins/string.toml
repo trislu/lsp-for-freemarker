@@ -1,0 +1,22 @@
+identifier = "string"
+category = "built-in"
+markdown = """
+# string
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_string_for_string)
+---
+> __Note:__
+> The `string` built-in also works [on numbers](https://freemarker.apache.org/docs/ref_builtins_number.html#ref_builtin_string_for_number), [on booleans](https://freemarker.apache.org/docs/ref_builtins_boolean.html#ref_builtin_string_for_boolean), and [on date/time/date-time](https://freemarker.apache.org/docs/ref_builtins_date.html#ref_builtin_string_for_date).
+
+**For strings:** Does nothing, just returns the string as-is. The exception is that if the value is a multi-type value, then the resulting value will be only a simple string.
+
+**For numbers:** Converts a number to a string. Uses predefined formats (`c`, `currency`, `number`, `percent`) or Java decimal number format patterns:
+```template
+${x?string.currency}
+${x?string["0.##"]}
+```
+
+**For booleans:** Converts a boolean to a string: `foo?string("yes", "no")`.
+
+**For dates:** Converts a date to a string with specified formatting: `lastUpdated?string["dd.MM.yyyy, HH:mm"]`.
+"""

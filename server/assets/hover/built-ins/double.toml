@@ -1,0 +1,9 @@
+identifier = "double"
+category = "built-in"
+markdown = """
+# double
+---
+> category: [Seldom used and expert built-ins](https://freemarker.apache.org/docs/ref_builtins_expert.html#ref_builtin_numType)
+---
+Returns a `SimpleNumber` which contains the same value as the original variable, but uses `java.lang.Double` for the internal representation. This is useful if a method is overloaded, or if a `TemplateModel` unwrapper has problems automatically choosing the suitable `java.lang.*` type.
+"""

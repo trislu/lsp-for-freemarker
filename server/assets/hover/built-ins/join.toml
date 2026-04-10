@@ -1,0 +1,22 @@
+identifier = "join"
+category = "built-in"
+markdown = """
+# join
+---
+> category: [Built-ins for sequences](https://freemarker.apache.org/docs/ref_builtins_sequence.html#ref_builtin_join)
+---
+Concatenates the items of a sequence to a single string, with the given separator.
+
+```template
+<#assign colors = ["red", "green", "blue"]>
+${colors?join(", ")}
+```
+Output:
+```output
+red, green, blue
+```
+`?join(...)` can have up to 3 parameters:
+1. **Separator** (required): inserted between items
+2. **Empty value** (default `""`): used if the sequence contains no items
+3. **List ending** (default `""`): printed after the last value if not empty
+"""

@@ -1,0 +1,11 @@
+identifier = "index_of"
+category = "built-in"
+markdown = """
+# index_of
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_index_of)
+---
+Returns the index within this string of the first occurrence of the specified substring. For example, `"abcabc"?index_of("bc")` will return 1 (don't forget that the index of the first character is 0). Also, you can specify the index to start the search from: `"abcabc"?index_of("bc", 2)` will return 4.
+
+If the 1st parameter does not occur as a substring in this string, then it returns -1.
+"""

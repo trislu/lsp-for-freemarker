@@ -1,0 +1,17 @@
+identifier = "word_list"
+category = "built-in"
+markdown = """
+# word_list
+---
+> category: [Built-ins for strings](https://freemarker.apache.org/docs/ref_builtins_string.html#ref_builtin_word_list)
+---
+A sequence that contains all words of the string in the order as they appear in the string. Words are continual character sequences that contain any character but white-space. Example:
+```template
+<#assign words = "   a bcd, .   1-2-3"?word_list>
+<#list words as word>[${word}]</#list>
+```
+Output:
+```output
+[a][bcd,][.][1-2-3]
+```
+"""
