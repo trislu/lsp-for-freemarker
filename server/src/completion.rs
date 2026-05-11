@@ -41,7 +41,6 @@ struct CompletionAssetItem {
 }
 
 impl CompletionAssetItem {
-    #[tracing::instrument(skip_all)]
     fn from_bytes(bytes: &[u8]) -> Option<CompletionAssetItem> {
         match std::str::from_utf8(bytes) {
             Ok(s) => match toml::from_str::<CompletionAssetItem>(s) {
@@ -56,12 +55,10 @@ impl CompletionAssetItem {
         }
     }
 
-    #[tracing::instrument(skip_all)]
     fn from_embed(file: &str) -> Option<CompletionAssetItem> {
         if let Some(completion_file) = CompletionAssetPath::get(file) {
             return CompletionAssetItem::from_bytes(completion_file.data.as_ref());
         }
-        tracing::error!("rust-embed file not found: {}:", file);
         None
     }
 

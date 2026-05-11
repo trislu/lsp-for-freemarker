@@ -17,7 +17,6 @@ use tower_lsp_server::{
         SemanticTokensResult, TextEdit,
     },
 };
-use tracing::{self, instrument};
 
 use crate::{client::save_client, window_log_info, workspace::Workspace};
 
@@ -29,7 +28,6 @@ pub struct Server {
 
 impl Server {
     pub const NAME: &str = "Freemarker Language Server";
-    pub const CODE_NAME: &str = "lsp-for-freemarker";
 
     pub fn new(client: Client) -> Self {
         let _ = save_client(client);
@@ -106,7 +104,6 @@ impl LanguageServer for Server {
         self.workspace.on_completion(params).await
     }
 
-    #[instrument(skip_all)]
     async fn goto_definition(
         &self,
         params: GotoDefinitionParams,
@@ -114,7 +111,6 @@ impl LanguageServer for Server {
         self.workspace.on_goto_definition(params).await
     }
 
-    #[instrument(skip_all)]
     async fn formatting(
         &self,
         params: DocumentFormattingParams,
