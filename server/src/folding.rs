@@ -30,6 +30,7 @@ impl FoldingAnalysis for Analysis {
             | Rule::CaseClause
             | Rule::DefaultClause
             | Rule::ElseClause
+            | Rule::ElseifClause
             | Rule::FunctionClause
             | Rule::IfClause
             | Rule::ListClause
