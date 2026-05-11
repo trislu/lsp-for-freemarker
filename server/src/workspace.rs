@@ -14,7 +14,7 @@ use crate::{
 use std::{collections::HashMap, str::FromStr, sync::Arc};
 use tokio::sync::RwLock;
 use tower_lsp_server::{
-    jsonrpc,
+    jsonrpc::{self, Error},
     ls_types::{
         CodeActionOrCommand, CodeActionParams, CompletionParams, CompletionResponse,
         DeleteFilesParams, DidChangeTextDocumentParams, DidChangeWatchedFilesParams,
@@ -29,8 +29,6 @@ use tower_lsp_server::{
 pub struct Workspace {
     reactors: Arc<RwLock<HashMap<Uri, Reactor>>>,
 }
-
-const GET_REACTOR_EXPECT: &str = "get reactor via uri should always succeed";
 
 impl Workspace {
     pub fn new() -> Self {
@@ -58,14 +56,14 @@ impl Workspace {
     pub async fn on_did_change(&self, params: &DidChangeTextDocumentParams) {
         let uri = &params.text_document.uri;
         let version = params.text_document.version;
-        tracing::debug!("on_did_change: {}", uri.to_string());
+        window_log_info!(format!("on_did_change: {}", uri.to_string()));
         for change_event in &params.content_changes {
             // assume only changes
             if let Some(range) = change_event.range {
-                tracing::debug!("range: {:?}", range);
+                window_log_info!(format!("range: {:?}", range));
                 self.update_file(uri, version, change_event).await;
             } else {
-                tracing::debug!("full text change");
+                window_log_info!("full text change");
             }
         }
     }
@@ -73,7 +71,7 @@ impl Workspace {
     async fn update_file(&self, uri: &Uri, version: i32, change: &TextDocumentContentChangeEvent) {
         let mut write_guard = self.reactors.write().await;
         if let Some(reactor) = write_guard.get_mut(uri) {
-            tracing::debug!("previous file version: {}", reactor.version);
+            window_log_info!(format!("previous file version: {}", reactor.version));
             reactor.apply_content_change(version, change);
         }
     }
@@ -89,17 +87,19 @@ impl Workspace {
             })
             .collect();
         // remove those files from the registry
+        let mut write_guard = self.reactors.write().await;
         for uri in uris {
             window_log_info!(format!("did change(delete) file: {}", uri.to_string()));
-            self.reactors.write().await.remove(&uri);
+            write_guard.remove(&uri);
         }
     }
 
     pub async fn on_did_delete_files(&self, params: DeleteFilesParams) {
+        let mut write_guard = self.reactors.write().await;
         for file_deletion in &params.files {
             let uri = Uri::from_str(&file_deletion.uri).unwrap();
             window_log_info!(format!("did delete file: {}", uri.to_string()));
-            self.reactors.write().await.remove(&uri);
+            write_guard.remove(&uri);
         }
     }
 
@@ -110,8 +110,10 @@ impl Workspace {
     ) -> jsonrpc::Result<DocumentDiagnosticReportResult> {
         let uri = &params.text_document.uri;
         let read_guard = self.reactors.read().await;
-        let reactor = read_guard.get(uri).expect(GET_REACTOR_EXPECT);
-        reactor.on_diagnostic(params).await
+        match read_guard.get(uri) {
+            Some(reactor) => reactor.on_diagnostic(params).await,
+            None => Err(Error::internal_error()),
+        }
     }
 
     pub async fn on_semantic_tokens_full(
@@ -121,15 +123,19 @@ impl Workspace {
         let uri = &params.text_document.uri;
         window_log_info!(format!("on_semantic_tokens_full: {}", uri.to_string()));
         let read_guard = self.reactors.read().await;
-        let reactor = read_guard.get(uri).expect(GET_REACTOR_EXPECT);
-        reactor.on_semantic_tokens_full(params).await
+        match read_guard.get(uri) {
+            Some(reactor) => reactor.on_semantic_tokens_full(params).await,
+            None => Err(Error::internal_error()),
+        }
     }
 
     pub async fn on_hover(&self, params: HoverParams) -> jsonrpc::Result<Option<Hover>> {
         let uri = &params.text_document_position_params.text_document.uri;
         let read_guard = self.reactors.read().await;
-        let reactor = read_guard.get(uri).expect(GET_REACTOR_EXPECT);
-        reactor.on_hover(params).await
+        match read_guard.get(uri) {
+            Some(reactor) => reactor.on_hover(params).await,
+            None => Err(Error::internal_error()),
+        }
     }
 
     pub async fn on_completion(
@@ -138,8 +144,10 @@ impl Workspace {
     ) -> jsonrpc::Result<Option<CompletionResponse>> {
         let uri = &params.text_document_position.text_document.uri;
         let read_guard = self.reactors.read().await;
-        let reactor = read_guard.get(uri).expect(GET_REACTOR_EXPECT);
-        reactor.on_completion(params).await
+        match read_guard.get(uri) {
+            Some(reactor) => reactor.on_completion(params).await,
+            None => Err(Error::internal_error()),
+        }
     }
 
     pub async fn on_goto_definition(
@@ -148,8 +156,10 @@ impl Workspace {
     ) -> jsonrpc::Result<Option<GotoDefinitionResponse>> {
         let uri = &params.text_document_position_params.text_document.uri;
         let read_guard = self.reactors.read().await;
-        let reactor = read_guard.get(uri).expect(GET_REACTOR_EXPECT);
-        reactor.on_goto_definition(params).await
+        match read_guard.get(uri) {
+            Some(reactor) => reactor.on_goto_definition(params).await,
+            None => Err(Error::internal_error()),
+        }
     }
 
     pub async fn on_formatting(
@@ -158,8 +168,10 @@ impl Workspace {
     ) -> jsonrpc::Result<Option<Vec<TextEdit>>> {
         let uri = &params.text_document.uri;
         let read_guard = self.reactors.read().await;
-        let reactor = read_guard.get(uri).expect(GET_REACTOR_EXPECT);
-        reactor.on_formatting(params).await
+        match read_guard.get(uri) {
+            Some(reactor) => reactor.on_formatting(params).await,
+            None => Err(Error::internal_error()),
+        }
     }
 
     pub async fn on_folding_range(
@@ -168,8 +180,10 @@ impl Workspace {
     ) -> jsonrpc::Result<Option<Vec<FoldingRange>>> {
         let uri = &params.text_document.uri;
         let read_guard = self.reactors.read().await;
-        let reactor = read_guard.get(uri).expect(GET_REACTOR_EXPECT);
-        reactor.on_folding_range(params).await
+        match read_guard.get(uri) {
+            Some(reactor) => reactor.on_folding_range(params).await,
+            None => Err(Error::internal_error()),
+        }
     }
 
     pub async fn on_code_action(
@@ -178,7 +192,9 @@ impl Workspace {
     ) -> jsonrpc::Result<Option<Vec<CodeActionOrCommand>>> {
         let uri = &params.text_document.uri;
         let read_guard = self.reactors.read().await;
-        let reactor = read_guard.get(uri).expect(GET_REACTOR_EXPECT);
-        reactor.on_code_action(params).await
+        match read_guard.get(uri) {
+            Some(reactor) => reactor.on_code_action(params).await,
+            None => Err(Error::internal_error()),
+        }
     }
 }
