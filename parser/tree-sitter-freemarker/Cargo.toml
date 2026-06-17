@@ -1,7 +1,7 @@
 [package]
 name = "tree-sitter-freemarker"
 description = "a parser library for freemarker template language, based on tree-sitter"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Lu Kai <kai.f.lu@nokia.com>", "Yuchen Wang"]
 license = "BSD-3-Clause"
 readme = "README.md"

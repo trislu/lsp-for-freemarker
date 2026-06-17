@@ -1,6 +1,6 @@
 [package]
 name = "lsp-for-freemarker"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Lu Kai <kai.f.lu@nokia.com>"]
 description = "A Freemarker Language Server implemented in Rust"
 publish = false
