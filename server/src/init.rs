@@ -48,6 +48,7 @@ fn do_initialize() -> InitializeResult {
             name: Server::NAME.to_owned(),
             version: Some(env!("CARGO_PKG_VERSION").to_string()),
         }),
+        ..Default::default()
     }
 }
 
