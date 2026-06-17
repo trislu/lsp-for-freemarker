@@ -205,14 +205,13 @@ fn encode_semantic_token(
     // toxic encoding rule, see also:
     // (https://github.com/microsoft/vscode-extension-samples/blob/5ae1f7787122812dcc84e37427ca90af5ee09f14/semantic-tokens-sample/vscode.proposed.d.ts#L71)
     let delta_line = (start.row - prev_start.row) as u32;
-    let delta_start = match delta_line == 0 {
-        // `deltaStart`: token start character, relative to the previous token (relative to 0 or the previous token's start if they are on the same line)
-        true => start.column - prev_start.column,
-        false => start.column,
-    } as u32;
     SemanticToken {
         delta_line,
-        delta_start,
+        delta_start: match delta_line == 0 {
+            // `deltaStart`: token start character, relative to the previous token (relative to 0 or the previous token's start if they are on the same line)
+            true => start.column - prev_start.column,
+            false => start.column,
+        } as u32,
         length: length as u32,
         token_type: token_type as u32, // #[repr(u32)] makes token_type ranged from 0
         token_modifiers_bitset: match modifiers {
@@ -235,8 +234,7 @@ impl HighlightAnalysis for Analysis {
             return;
         }
         let mut semantic_tokens = vec![];
-        if let Some(token) = tokenize_from(node) {
-            let Token(token_type, range, modifiers) = token;
+        if let Some(Token(token_type, range, modifiers)) = tokenize_from(node) {
             if range.end_point.row == range.start_point.row {
                 // single-line token
                 semantic_tokens.push(encode_semantic_token(

@@ -34,7 +34,6 @@ struct HoverAssetItem {
 }
 
 impl HoverAssetItem {
-    #[tracing::instrument(skip_all)]
     fn from_bytes(bytes: &[u8]) -> Option<HoverAssetItem> {
         match std::str::from_utf8(bytes) {
             Ok(s) => match toml::from_str::<HoverAssetItem>(s) {
@@ -49,7 +48,6 @@ impl HoverAssetItem {
         }
     }
 
-    #[tracing::instrument(skip_all)]
     fn from_embed(file: EmbeddedFile) -> Option<HoverAssetItem> {
         HoverAssetItem::from_bytes(file.data.as_ref())
     }

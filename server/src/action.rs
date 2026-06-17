@@ -60,18 +60,18 @@ impl ActionFeature for Reactor {
         &self,
         params: CodeActionParams,
     ) -> JsonRpcResult<Option<Vec<CodeActionOrCommand>>> {
-        let mut actions: Vec<CodeActionOrCommand> = Vec::new();
-        for diagnostic in params.context.diagnostics {
-            if let Some(NumberOrString::String(code)) = &diagnostic.code {
-                // string codes
-                if let Some(fix_action) =
+        Ok(params
+            .context
+            .diagnostics
+            .iter()
+            .map(|diagnostic| {
+                if let Some(NumberOrString::String(code)) = &diagnostic.code {
+                    // string codes
                     create_fix_warning_action(code, &params.text_document.uri, diagnostic.clone())
-                {
-                    // Create a CodeAction for this specific diagnostic
-                    actions.push(fix_action);
+                } else {
+                    None
                 }
-            }
-        }
-        Ok(Some(actions))
+            })
+            .collect())
     }
 }

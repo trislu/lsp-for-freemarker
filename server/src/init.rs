@@ -7,7 +7,6 @@ use tower_lsp_server::ls_types::{
     InitializeResult, ServerCapabilities, ServerInfo, TextDocumentSyncCapability,
     TextDocumentSyncKind, WorkspaceFileOperationsServerCapabilities, WorkspaceServerCapabilities,
 };
-use tracing::{Level, event};
 
 use crate::server::{Initializer, Server};
 use crate::{
@@ -49,6 +48,7 @@ fn do_initialize() -> InitializeResult {
             name: Server::NAME.to_owned(),
             version: Some(env!("CARGO_PKG_VERSION").to_string()),
         }),
+        ..Default::default()
     }
 }
 
@@ -57,11 +57,6 @@ impl Initializer for Server {
     async fn on_initialize(&self, params: InitializeParams) -> InitializeResult {
         window_log_info!("[Server] initializing...");
         if let Ok(mut root_path) = self.root_path.try_write() {
-            event!(
-                Level::DEBUG,
-                process = params.process_id,
-                pwd = params.root_path
-            );
             root_path.clone_from(&params.root_path.unwrap_or_default());
         }
         do_initialize()
