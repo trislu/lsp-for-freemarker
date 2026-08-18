@@ -2,6 +2,7 @@
 // Licensed under the BSD 3-Clause License.
 // SPDX-License-Identifier: BSD-3-Clause
 
+use crate::grammar::Rule;
 use rust_embed::{Embed, EmbeddedFile};
 use serde::Deserialize;
 use std::sync::LazyLock;
@@ -13,7 +14,6 @@ use tower_lsp_server::{
         MarkupKind,
     },
 };
-use tree_sitter_freemarker::grammar::Rule;
 
 use crate::{features::HoverFeature, reactor::Reactor, utils};
 

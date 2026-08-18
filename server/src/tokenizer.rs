@@ -16,8 +16,8 @@ use tower_lsp_server::{
     },
 };
 
+use crate::grammar::Rule;
 use tree_sitter::{Node, Point, Range};
-use tree_sitter_freemarker::grammar::Rule;
 
 use crate::{
     analysis::{Analysis, AnalysisContext, HighlightAnalysis},
@@ -125,22 +125,25 @@ fn tokenize_from(node: &Node<'_>) -> Option<Token> {
             | Rule::CloseTag
             | Rule::ListBegin
             | Rule::ListClose
+            | Rule::ItemsBegin
+            | Rule::ItemsClose
             | Rule::SepBegin
             | Rule::SepClose
             | Rule::SwitchBegin
             | Rule::SwitchClose
             | Rule::BreakStmt
+            | Rule::ContinueStmt
             | Rule::OnBegin
             | Rule::CaseBegin
             | Rule::DefaultBegin
             | Rule::ReturnBegin => Some(Token(TokenType::Keyword, range, None)),
-            Rule::UndocumentedCloseTag => Some(Token(TokenType::Keyword, range, Some(DEPRECATED))),
+            Rule::SelfClosingTag => Some(Token(TokenType::Keyword, range, Some(DEPRECATED))),
             Rule::MacroBegin
             | Rule::MacroCloseTag
             | Rule::MacroClose
             | Rule::MacroCallBegin
             | Rule::MacroCallEnd
-            | Rule::InterpolationPrepend => Some(Token(TokenType::Macro, range, None)),
+            | Rule::InterpolationStart => Some(Token(TokenType::Macro, range, None)),
             Rule::ImportAlias | Rule::MacroNamespace => {
                 Some(Token(TokenType::Namespace, range, None))
             }
@@ -148,18 +151,18 @@ fn tokenize_from(node: &Node<'_>) -> Option<Token> {
             Rule::EqualOperator
             | Rule::AssignOperator
             | Rule::BinaryOperator
-            | Rule::DefaultOperator
-            | Rule::NegationOperator
+            | Rule::MissingValueOperator
+            | Rule::NotOperator
+            | Rule::MinusOperator
+            | Rule::PlusOperator
             | Rule::GreaterThanOperator
             | Rule::GreaterThanEqualOperator => Some(Token(TokenType::Operator, range, None)),
-            Rule::DeprecatedEqualOperator => {
-                Some(Token(TokenType::Operator, range, Some(DEPRECATED)))
-            }
+            Rule::LegacyEqualOperator => Some(Token(TokenType::Operator, range, Some(DEPRECATED))),
             Rule::ParameterName => Some(Token(TokenType::Parameter, range, None)),
-            Rule::Variable | Rule::Identifier | Rule::MacroSpecs => {
+            Rule::Variable | Rule::Identifier | Rule::MacroPath => {
                 Some(Token(TokenType::Variable, range, None))
             }
-            Rule::StringLiteral | Rule::ImportPath | Rule::AmbiguousStringLiteral => {
+            Rule::StringLiteral | Rule::ImportPath | Rule::StringLvalue => {
                 Some(Token(TokenType::String, range, None))
             }
             Rule::BooleanTrue | Rule::BooleanFalse => {

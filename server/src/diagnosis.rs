@@ -4,6 +4,14 @@
 
 use std::str::FromStr;
 
+use crate::{
+    consts::{SEMANTICS, SYNTAX},
+    grammar::Rule,
+    href::{
+        COMPARISION_EXPRESSION, DIRECTIVE_ASSIGN, DIRECTIVE_IMPORT, DIRECTIVE_LIST_BREAK,
+        TOPLEVEL_VARIABLE,
+    },
+};
 use tower_lsp_server::{
     jsonrpc,
     ls_types::{
@@ -13,14 +21,6 @@ use tower_lsp_server::{
     },
 };
 use tree_sitter::Node;
-use tree_sitter_freemarker::{
-    SEMANTICS, SYNTAX,
-    grammar::Rule,
-    href::{
-        COMPARISION_EXPRESSION, DIRECTIVE_ASSIGN, DIRECTIVE_IMPORT, DIRECTIVE_LIST_BREAK,
-        TOPLEVEL_VARIABLE,
-    },
-};
 
 use crate::{
     analysis::{Analysis, AnalysisContext, DiagnosticAnalysis, Symbol},
@@ -64,25 +64,25 @@ impl Scenario {
         href: TOPLEVEL_VARIABLE,
     };
 
-    const AMBIGUOUS_STRING_LITERAL: Scenario = Scenario {
+    const STRING_LVALUE: Scenario = Scenario {
         severity: DiagnosticSeverity::WARNING,
-        code: "ambiguous_string_literal",
+        code: "string_lvalue",
         source: SYNTAX,
         message: "While using a string literal as an L-value is syntactically valid for <#assign> and <#local>, this practice is generally discouraged due to potential ambiguity and reduced maintainability.",
         href: DIRECTIVE_ASSIGN,
     };
 
-    const DEPRECATED_EQUAL_OPERATOR: Scenario = Scenario {
+    const LEGACY_EQUAL_OPERATOR: Scenario = Scenario {
         severity: DiagnosticSeverity::WARNING,
-        code: "deprecated_equal_operator",
+        code: "legacy_equal_operator",
         source: SYNTAX,
         message: "For equality checks in comparisons, use '=='. The single '=' operator is deprecated for this purpose.",
         href: COMPARISION_EXPRESSION,
     };
 
-    const UNDOCUMENTED_CLOSE_TAG: Scenario = Scenario {
+    const SELF_CLOSING_TAG: Scenario = Scenario {
         severity: DiagnosticSeverity::WARNING,
-        code: "undocumented_close_tag",
+        code: "self_closing_tag",
         source: SYNTAX,
         message: "For non-capture <#assign> directives, it is recommended to use '>' as the close tag. Using '/>' is undocumented and adds unnecessary characters.",
         href: DIRECTIVE_ASSIGN,
@@ -166,22 +166,22 @@ impl DiagnosticAnalysis for Analysis {
                         });
                     }
                 }
-                Rule::AmbiguousStringLiteral => {
+                Rule::StringLvalue => {
                     self.add_diagnostic(Diagnostic {
                         range,
-                        ..Scenario::AMBIGUOUS_STRING_LITERAL.into()
+                        ..Scenario::STRING_LVALUE.into()
                     });
                 }
-                Rule::DeprecatedEqualOperator => {
+                Rule::LegacyEqualOperator => {
                     self.add_diagnostic(Diagnostic {
                         range,
-                        ..Scenario::DEPRECATED_EQUAL_OPERATOR.into()
+                        ..Scenario::LEGACY_EQUAL_OPERATOR.into()
                     });
                 }
-                Rule::UndocumentedCloseTag => {
+                Rule::SelfClosingTag => {
                     self.add_diagnostic(Diagnostic {
                         range,
-                        ..Scenario::UNDOCUMENTED_CLOSE_TAG.into()
+                        ..Scenario::SELF_CLOSING_TAG.into()
                     });
                 }
                 Rule::ListBegin | Rule::SwitchBegin => {

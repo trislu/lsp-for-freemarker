@@ -4,13 +4,13 @@
 
 use std::str::FromStr;
 
+use crate::grammar::Rule;
 use tower_lsp_server::{
     jsonrpc::Result as JsonRpcResult,
     ls_types::{
         DefinitionOptions, GotoDefinitionParams, GotoDefinitionResponse, Location, OneOf, Range,
     },
 };
-use tree_sitter_freemarker::grammar::Rule;
 
 use crate::{features::GotoFeature, reactor::Reactor, utils};
 

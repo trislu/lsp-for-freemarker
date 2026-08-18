@@ -4,13 +4,14 @@
 
 use std::{path::PathBuf, str::FromStr};
 
+use crate::consts::SEMANTICS;
+use crate::grammar::Rule;
+use crate::href::DIRECTIVE_IMPORT;
 use tower_lsp_server::ls_types::{
     CodeDescription, Diagnostic, DiagnosticRelatedInformation, DiagnosticSeverity, Location,
     NumberOrString, Range, Uri,
 };
 use tree_sitter::Node;
-use tree_sitter_freemarker::href::DIRECTIVE_IMPORT;
-use tree_sitter_freemarker::{SEMANTICS, grammar::Rule};
 
 use crate::diagnosis::Scenario;
 use crate::{

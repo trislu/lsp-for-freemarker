@@ -11,7 +11,7 @@ use tower_lsp_server::{
     },
 };
 
-use tree_sitter_freemarker::grammar::Rule;
+use crate::grammar::Rule;
 
 use crate::{features::ActionFeature, reactor::Reactor};
 
@@ -23,8 +23,8 @@ fn create_fix_warning_action(
 ) -> Option<CodeActionOrCommand> {
     // The TextEdit describes replacing the diagnostic's range with the correct text
     let new_text = match Rule::from_str(code.as_str()) {
-        Ok(Rule::DeprecatedEqualOperator) => "==".to_string(),
-        Ok(Rule::UndocumentedCloseTag) => ">".to_string(),
+        Ok(Rule::LegacyEqualOperator) => "==".to_string(),
+        Ok(Rule::SelfClosingTag) => ">".to_string(),
         _ => return None,
     };
     let text_edit = TextEdit {

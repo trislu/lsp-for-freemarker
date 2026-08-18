@@ -11,11 +11,11 @@ use tower_lsp_server::{
     },
 };
 
+use crate::grammar::{Builtin, Rule};
 use rust_embed::Embed;
 use serde::Deserialize;
 use std::sync::LazyLock;
 use strum::IntoEnumIterator;
-use tree_sitter_freemarker::grammar::{Builtin, Rule};
 
 use crate::features::CompletionFeature;
 use crate::reactor::Reactor;

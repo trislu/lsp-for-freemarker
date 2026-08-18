@@ -4,12 +4,12 @@
 
 use std::collections::{HashMap, HashSet};
 
+use crate::grammar::Rule;
 use thiserror::Error;
 use tower_lsp_server::ls_types::{
     Diagnostic, FoldingRange, Range, RelatedFullDocumentDiagnosticReport, SemanticToken, Uri,
 };
 use tree_sitter::{Node, Point};
-use tree_sitter_freemarker::grammar::Rule;
 
 use crate::{doc::TextDocument, parser::TextParser};
 
@@ -73,7 +73,7 @@ impl Analysis {
         self.analyze_diagnostic_report(node, doc, ctx);
         // Perform a DFS traversing
         for i in 0..node.child_count() {
-            if let Some(child) = node.child(i) {
+            if let Some(child) = node.child(i as u32) {
                 self.syntatic_analysis(&child, doc, ctx)
             }
         }

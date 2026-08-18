@@ -4,9 +4,9 @@
 
 use std::str::FromStr;
 
+use crate::grammar::Rule;
 use tower_lsp_server::ls_types::{FoldingRange, FoldingRangeProviderCapability};
 use tree_sitter::Node;
-use tree_sitter_freemarker::grammar::Rule;
 
 use crate::{
     analysis::{Analysis, AnalysisContext, FoldingAnalysis},
