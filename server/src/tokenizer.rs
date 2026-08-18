@@ -16,15 +16,8 @@ use tower_lsp_server::{
     },
 };
 
-use crate::grammar::Rule;
+use crate::{document::Document, features::SemanticTokenFeature, grammar::Rule, text::SourceText};
 use tree_sitter::{Node, Point, Range};
-
-use crate::{
-    analysis::{Analysis, AnalysisContext, HighlightAnalysis},
-    doc::TextDocument,
-    features::SemanticTokenFeature,
-    reactor::Reactor,
-};
 
 // NOTICE: We use "semantic-token-provider" to provide code highlighting, see below link
 // https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide#semantic-token-provider
@@ -224,42 +217,44 @@ fn encode_semantic_token(
     }
 }
 
-impl HighlightAnalysis for Analysis {
-    fn analyze_semantic_highlight(
-        &mut self,
+/// Computes the semantic tokens for a document by walking the syntax tree once.
+pub(crate) fn semantic_tokens(doc: &Document) -> Vec<SemanticToken> {
+    let source = doc.source();
+    let tree = doc.tree();
+    fn collect(
+        source: &SourceText,
         node: &Node,
-        doc: &TextDocument,
-        ctx: &mut AnalysisContext,
+        prev_start: &mut Point,
+        tokens: &mut Vec<SemanticToken>,
     ) {
         if node.is_error() || node.is_missing() {
             // not sure if it is proper
             return;
         }
-        let mut semantic_tokens = vec![];
         if let Some(Token(token_type, range, modifiers)) = tokenize_from(node) {
             if range.end_point.row == range.start_point.row {
                 // single-line token
-                semantic_tokens.push(encode_semantic_token(
-                    &ctx.prev_start,
+                tokens.push(encode_semantic_token(
+                    prev_start,
                     token_type,
                     &range.start_point,
                     range.end_byte - range.start_byte,
                     modifiers,
                 ));
-                ctx.prev_start = range.start_point;
+                *prev_start = range.start_point;
             } else {
-                // multi-line token is not allowed, so split which into multiple inline tokens
+                // multi-line token is not allowed, so split it into multiple inline tokens
                 // token of 1st line
                 let first_start = range.start_point;
-                let first_line_len = doc.line_len(first_start.row).unwrap();
-                semantic_tokens.push(encode_semantic_token(
-                    &ctx.prev_start,
+                let first_line_len = source.line_len(first_start.row).unwrap();
+                tokens.push(encode_semantic_token(
+                    prev_start,
                     token_type,
                     &first_start,
                     first_line_len,
                     modifiers,
                 ));
-                ctx.prev_start = first_start;
+                *prev_start = first_start;
                 // tokens from 2nd to last-1 line
                 let mut next_row = first_start.row + 1;
                 while next_row < range.end_point.row {
@@ -267,45 +262,53 @@ impl HighlightAnalysis for Analysis {
                         row: next_row,
                         column: 0,
                     };
-                    let next_line_len = doc.line_len(next_row).unwrap();
-                    semantic_tokens.push(encode_semantic_token(
-                        &ctx.prev_start,
+                    let next_line_len = source.line_len(next_row).unwrap();
+                    tokens.push(encode_semantic_token(
+                        prev_start,
                         token_type,
                         &next_start,
                         next_line_len,
                         modifiers,
                     ));
                     next_row += 1;
-                    ctx.prev_start = next_start;
+                    *prev_start = next_start;
                 }
                 // token of last line
                 let last_start = Point {
                     row: range.end_point.row,
                     column: 0,
                 };
-                semantic_tokens.push(encode_semantic_token(
-                    &ctx.prev_start,
+                tokens.push(encode_semantic_token(
+                    prev_start,
                     token_type,
                     &last_start,
                     range.end_point.column,
                     modifiers,
                 ));
-                ctx.prev_start = last_start;
+                *prev_start = last_start;
             }
         }
-        self.add_semantic_tokens(semantic_tokens);
+        for i in 0..node.child_count() {
+            if let Some(child) = node.child(i as u32) {
+                collect(source, &child, prev_start, tokens);
+            }
+        }
     }
+
+    let mut tokens = Vec::new();
+    let mut prev_start = Point { row: 0, column: 0 };
+    collect(source, &tree.root_node(), &mut prev_start, &mut tokens);
+    tokens
 }
 
-impl SemanticTokenFeature for Reactor {
+impl SemanticTokenFeature for Document {
     async fn on_semantic_tokens_full(
         &self,
-        params: SemanticTokensParams,
+        _: SemanticTokensParams,
     ) -> jsonrpc::Result<Option<SemanticTokensResult>> {
-        let _ = params;
         Ok(Some(SemanticTokensResult::Tokens(SemanticTokens {
             result_id: Some(self.version.to_string()),
-            data: self.get_analysis().get_analyzed_semantic_tokens(),
+            data: semantic_tokens(self),
         })))
     }
 }

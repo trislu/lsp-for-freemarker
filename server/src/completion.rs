@@ -17,8 +17,8 @@ use serde::Deserialize;
 use std::sync::LazyLock;
 use strum::IntoEnumIterator;
 
+use crate::document::Document;
 use crate::features::CompletionFeature;
-use crate::reactor::Reactor;
 
 #[derive(Embed)]
 #[folder = "assets/completion"]
@@ -138,10 +138,10 @@ pub fn completion_capability() -> CompletionOptions {
     }
 }
 
-impl CompletionFeature for Reactor {
+impl CompletionFeature for Document {
     fn list_macro_definitions(&self) -> Vec<CompletionItem> {
         let mut macro_definitions = vec![];
-        self.get_analysis().foreach_symbol(|symbol_name, symbols| {
+        self.semantic().foreach_symbol(|symbol_name, symbols| {
             let first_definition = symbols[0];
             if matches!(first_definition.rule, Rule::MacroName | Rule::ImportAlias) {
                 macro_definitions.push(CompletionItem {
@@ -150,7 +150,7 @@ impl CompletionFeature for Reactor {
                     documentation: Some(Documentation::MarkupContent(MarkupContent {
                         kind: MarkupKind::Markdown,
                         value: self
-                            .get_document()
+                            .source()
                             .get_ranged_text(first_definition.start_byte..first_definition.end_byte)
                             .to_string(),
                     })),
@@ -184,7 +184,7 @@ impl CompletionFeature for Reactor {
             line: position.line,
             character: position.character - 1,
         };
-        let Some(prev_char) = self.get_document().get_prev_char_at(&trigger_position) else {
+        let Some(prev_char) = self.source().get_prev_char_at(&trigger_position) else {
             return Ok(None);
         };
         let mut result: Option<CompletionResponse> = None;

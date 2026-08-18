@@ -17,18 +17,13 @@ use tower_lsp_server::{
     ls_types::{
         CodeDescription, Diagnostic, DiagnosticOptions, DiagnosticServerCapabilities,
         DiagnosticSeverity, DocumentDiagnosticParams, DocumentDiagnosticReport,
-        DocumentDiagnosticReportResult, NumberOrString,
+        DocumentDiagnosticReportResult, FullDocumentDiagnosticReport, NumberOrString,
+        RelatedFullDocumentDiagnosticReport,
     },
 };
 use tree_sitter::Node;
 
-use crate::{
-    analysis::{Analysis, AnalysisContext, DiagnosticAnalysis, Symbol},
-    doc::TextDocument,
-    features::DiagnosticFeature,
-    reactor::Reactor,
-    utils,
-};
+use crate::{document::Document, features::DiagnosticFeature, text::SourceText, utils};
 
 pub fn diagnostic_capability() -> DiagnosticServerCapabilities {
     DiagnosticServerCapabilities::Options(DiagnosticOptions {
@@ -123,19 +118,23 @@ impl From<Scenario> for Diagnostic {
     }
 }
 
-impl DiagnosticAnalysis for Analysis {
-    fn analyze_diagnostic_report(
-        &mut self,
+/// Computes the syntax-level diagnostics by walking the tree once. Semantic
+/// (cross-referencing) diagnostics come from the [`crate::semantic::SemanticModel`].
+pub(crate) fn syntax_diagnostics(doc: &Document) -> Vec<Diagnostic> {
+    let source = doc.source();
+    let tree = doc.tree();
+    fn collect(
+        source: &SourceText,
         node: &Node,
-        doc: &TextDocument,
-        ctx: &mut AnalysisContext,
+        scope: &mut Vec<Rule>,
+        diagnostics: &mut Vec<Diagnostic>,
     ) {
         let node_kind = node.kind();
         let range = utils::parser_node_to_document_range(node);
         // TODO: maybe use tree-sitter query in the future
         if node.is_missing() {
             // TODO : maybe use query in the future
-            self.add_diagnostic(Diagnostic {
+            diagnostics.push(Diagnostic {
                 range,
                 severity: Some(DiagnosticSeverity::ERROR),
                 source: Some(SYNTAX.to_owned()),
@@ -145,8 +144,8 @@ impl DiagnosticAnalysis for Analysis {
         }
 
         if node.is_error() {
-            let node_text = doc.get_ranged_text(node.start_byte()..node.end_byte());
-            self.add_diagnostic(Diagnostic {
+            let node_text = source.get_ranged_text(node.start_byte()..node.end_byte());
+            diagnostics.push(Diagnostic {
                 range,
                 severity: Some(DiagnosticSeverity::ERROR),
                 source: Some(SYNTAX.to_owned()),
@@ -158,79 +157,84 @@ impl DiagnosticAnalysis for Analysis {
         if let Ok(rule) = Rule::from_str(node_kind) {
             match rule {
                 Rule::Identifier => {
-                    let node_text = doc.get_ranged_text(node.start_byte()..node.end_byte());
+                    let node_text = source.get_ranged_text(node.start_byte()..node.end_byte());
                     if node_text.contains("\\") {
-                        self.add_diagnostic(Diagnostic {
+                        diagnostics.push(Diagnostic {
                             range,
                             ..Scenario::BACKSLASHED_IDENTIFIER.into()
                         });
                     }
                 }
                 Rule::StringLvalue => {
-                    self.add_diagnostic(Diagnostic {
+                    diagnostics.push(Diagnostic {
                         range,
                         ..Scenario::STRING_LVALUE.into()
                     });
                 }
                 Rule::LegacyEqualOperator => {
-                    self.add_diagnostic(Diagnostic {
+                    diagnostics.push(Diagnostic {
                         range,
                         ..Scenario::LEGACY_EQUAL_OPERATOR.into()
                     });
                 }
                 Rule::SelfClosingTag => {
-                    self.add_diagnostic(Diagnostic {
+                    diagnostics.push(Diagnostic {
                         range,
                         ..Scenario::SELF_CLOSING_TAG.into()
                     });
                 }
                 Rule::ListBegin | Rule::SwitchBegin => {
-                    ctx.scope.push(rule);
+                    scope.push(rule);
                 }
                 Rule::ListClose | Rule::SwitchClose => {
-                    ctx.scope.pop();
+                    scope.pop();
                 }
-                Rule::BreakStmt => match ctx.scope.last() {
+                Rule::BreakStmt => match scope.last() {
                     Some(scope_rule) => {
                         if *scope_rule == Rule::ListBegin {
-                            self.add_diagnostic(Diagnostic {
+                            diagnostics.push(Diagnostic {
                                 range,
                                 ..Scenario::DEPRECATED_LIST_BREAK.into()
                             })
                         }
                     }
-                    None => self.add_diagnostic(Diagnostic {
+                    None => diagnostics.push(Diagnostic {
                         range,
                         ..Scenario::UNEXPECTED_BREAK_STMT.into()
                     }),
                 },
-                Rule::MacroNamespace => {
-                    let node_text = doc.get_ranged_text(node.start_byte()..node.end_byte());
-                    let macro_call = Symbol {
-                        rule,
-                        start_byte: node.start_byte(),
-                        end_byte: node.end_byte(),
-                        range,
-                    };
-                    ctx.macro_call_map
-                        .entry(node_text)
-                        .and_modify(|macro_calls| macro_calls.push(macro_call))
-                        .or_insert(vec![macro_call]);
-                }
                 _ => {}
             }
         }
+        for i in 0..node.child_count() {
+            if let Some(child) = node.child(i as u32) {
+                collect(source, &child, scope, diagnostics);
+            }
+        }
     }
+
+    let mut diagnostics = Vec::new();
+    let mut scope = Vec::new();
+    collect(source, &tree.root_node(), &mut scope, &mut diagnostics);
+    diagnostics
 }
 
-impl DiagnosticFeature for Reactor {
+impl DiagnosticFeature for Document {
     async fn on_diagnostic(
         &self,
         _: DocumentDiagnosticParams,
     ) -> jsonrpc::Result<DocumentDiagnosticReportResult> {
         // TODO: Unchanged support
+        let mut items = syntax_diagnostics(self);
+        items.extend(self.semantic().diagnostics().iter().cloned());
         Ok(DocumentDiagnosticReportResult::Report(
-            DocumentDiagnosticReport::Full(self.get_analysis().get_analyzed_full_diagnostics()),
+            DocumentDiagnosticReport::Full(RelatedFullDocumentDiagnosticReport {
+                full_document_diagnostic_report: FullDocumentDiagnosticReport {
+                    result_id: None,
+                    items,
+                },
+                ..Default::default()
+            }),
         ))
     }
 }

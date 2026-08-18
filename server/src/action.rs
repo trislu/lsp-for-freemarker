@@ -13,7 +13,7 @@ use tower_lsp_server::{
 
 use crate::grammar::Rule;
 
-use crate::{features::ActionFeature, reactor::Reactor};
+use crate::{document::Document, features::ActionFeature};
 
 #[allow(clippy::mutable_key_type)]
 fn create_fix_warning_action(
@@ -52,7 +52,7 @@ pub fn code_action_capability() -> CodeActionProviderCapability {
     })
 }
 
-impl ActionFeature for Reactor {
+impl ActionFeature for Document {
     async fn on_code_action(
         &self,
         params: CodeActionParams,

@@ -4,25 +4,27 @@
 
 use tree_sitter::{InputEdit, Node, Parser, Point, Tree};
 
-pub struct TextParser {
+/// The syntax tree of a document. The underlying [`Parser`] is retained so that
+/// edits can be re-parsed incrementally, reusing the previous tree.
+pub struct SyntaxTree {
     parser: Parser,
-    ast: Option<Tree>,
+    ast: Tree,
 }
 
-impl std::fmt::Debug for TextParser {
+impl std::fmt::Debug for SyntaxTree {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("TextParser")
-            .field("has_ast", &self.ast.is_some())
-            .finish()
+        f.debug_struct("SyntaxTree").finish_non_exhaustive()
     }
 }
 
-impl TextParser {
-    /// Creates a new parser and parses the given text into an initial syntax tree.
-    pub fn new(text: &str) -> Self {
+impl SyntaxTree {
+    /// Parses the given text into an initial syntax tree.
+    pub fn parse(text: &str) -> Self {
         let mut parser = Self::parser_for_freemarker();
-        let ast = parser.parse(text, None);
-        TextParser { parser, ast }
+        let ast = parser
+            .parse(text, None)
+            .expect("the language is set, so parsing always yields a tree");
+        SyntaxTree { parser, ast }
     }
 
     fn parser_for_freemarker() -> Parser {
@@ -34,13 +36,13 @@ impl TextParser {
         parser
     }
 
-    pub fn get_ast(&self) -> Option<Tree> {
-        self.ast.clone()
+    pub fn root_node(&self) -> Node<'_> {
+        self.ast.root_node()
     }
 
-    pub fn get_node_at_point(&self, point: Point) -> Option<Node<'_>> {
-        let tree = self.ast.as_ref()?;
-        tree.root_node()
+    pub fn node_at(&self, point: Point) -> Option<Node<'_>> {
+        self.ast
+            .root_node()
             .named_descendant_for_point_range(point, point)
     }
 
@@ -49,17 +51,15 @@ impl TextParser {
         // Apply the incremental edit to the existing tree, then reuse it for an
         // incremental re-parse. A `None` edit means the whole document changed,
         // in which case we fall back to a full parse.
-        let mut incremental = false;
-        if let Some(edit) = input_edit {
-            let tree = self
-                .ast
-                .as_mut()
-                .expect("cannot apply an incremental edit without an existing tree");
-            tree.edit(&edit);
-            incremental = true;
+        let incremental = input_edit.is_some();
+        if let Some(edit) = &input_edit {
+            self.ast.edit(edit);
         }
-        let old_tree = if incremental { self.ast.as_ref() } else { None };
-        self.ast = self.parser.parse(text, old_tree);
+        let old_tree = if incremental { Some(&self.ast) } else { None };
+        self.ast = self
+            .parser
+            .parse(text, old_tree)
+            .expect("the language is set, so re-parsing always yields a tree");
     }
 }
 
@@ -69,7 +69,7 @@ mod tests {
 
     use crate::grammar::Rule;
 
-    use super::TextParser;
+    use super::SyntaxTree;
 
     #[test]
     fn node_kinds_match_rule_enum() {
@@ -79,10 +79,7 @@ mod tests {
 <#import "lib.ftl" as lib>
 <@lib.macro param=1 />
 "#;
-        let parser = TextParser::new(text);
-        let tree = parser
-            .get_ast()
-            .expect("parser always produces a syntax tree");
+        let tree = SyntaxTree::parse(text);
         assert!(
             !tree.root_node().has_error(),
             "sample FTL should parse cleanly"

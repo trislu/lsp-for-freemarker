@@ -12,7 +12,7 @@ use tower_lsp_server::ls_types::{Position, TextDocumentContentChangeEvent, Uri};
 use tree_sitter::{InputEdit, Point};
 
 #[derive(Debug)]
-pub struct TextDocument {
+pub struct SourceText {
     uri: Uri,
     pub rope: Rope,
 }
@@ -42,18 +42,18 @@ pub enum PositionEncodingKind {
     UTF32,
 }
 
-impl std::fmt::Display for TextDocument {
+impl std::fmt::Display for SourceText {
     #[inline]
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         self.rope.fmt(f)
     }
 }
 
-impl TextDocument {
+impl SourceText {
     /// Creates a new document from the given text and language id. It creates
     /// a rope, parser and syntax tree from the text.
     pub fn new(uri: &Uri, text: &str) -> Self {
-        TextDocument {
+        SourceText {
             uri: uri.clone(),
             rope: Rope::from_str(text),
         }

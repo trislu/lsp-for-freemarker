@@ -15,7 +15,7 @@ use tower_lsp_server::{
     },
 };
 
-use crate::{features::HoverFeature, reactor::Reactor, utils};
+use crate::{document::Document, features::HoverFeature, utils};
 
 #[derive(Embed)]
 #[folder = "assets/hover/"]
@@ -97,11 +97,11 @@ pub fn hover_capability() -> HoverProviderCapability {
     HoverProviderCapability::Simple(true)
 }
 
-impl HoverFeature for Reactor {
+impl HoverFeature for Document {
     async fn on_hover(&self, params: HoverParams) -> jsonrpc::Result<Option<Hover>> {
         let point =
             utils::lsp_position_to_parser_point(&params.text_document_position_params.position);
-        if let Some(node) = self.get_parser().get_node_at_point(point)
+        if let Some(node) = self.tree().node_at(point)
             && let Ok(rule) = Rule::from_str(node.kind())
         {
             return match rule {
@@ -120,7 +120,7 @@ impl HoverFeature for Reactor {
                 }
                 Rule::BuiltinName => {
                     let node_text = self
-                        .get_document()
+                        .source()
                         .get_ranged_text(node.start_byte()..node.end_byte());
                     if let Some(hover) = STATIC_ASSETS.built_in.get(&node_text) {
                         return Ok(Some(Hover {
@@ -132,14 +132,13 @@ impl HoverFeature for Reactor {
                 }
                 Rule::MacroNamespace => {
                     let node_text = self
-                        .get_document()
+                        .source()
                         .get_ranged_text(node.start_byte()..node.end_byte());
-                    match self.get_analysis().find_symbol_definition(&node_text) {
-                        Ok(symbols) => {
+                    match self.semantic().find_symbol_definition(&node_text) {
+                        Some(symbols) => {
                             let sym = symbols[0];
-                            let definition_line = self
-                                .get_document()
-                                .get_line_text(sym.range.start.line as usize);
+                            let definition_line =
+                                self.source().get_line_text(sym.range.start.line as usize);
                             return Ok(Some(Hover {
                                 contents: HoverContents::Scalar(MarkedString::LanguageString(
                                     utils::ftl_to_rust(definition_line.trim()),
@@ -147,7 +146,7 @@ impl HoverFeature for Reactor {
                                 range: Some(utils::parser_node_to_document_range(&node)),
                             }));
                         }
-                        _ => Ok(None),
+                        None => Ok(None),
                     }
                 }
                 _ => Ok(None),

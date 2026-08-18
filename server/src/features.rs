@@ -2,7 +2,7 @@
 // Licensed under the BSD 3-Clause License.
 // SPDX-License-Identifier: BSD-3-Clause
 
-//! LSP feature traits implemented by the per-document [`crate::reactor::Reactor`].
+//! LSP feature traits implemented by the per-document [`crate::document::Document`].
 
 use tower_lsp_server::{
     jsonrpc,
