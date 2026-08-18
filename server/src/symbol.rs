@@ -34,7 +34,9 @@ impl ImportWarning {
             severity: Some(DiagnosticSeverity::WARNING),
             code: Some(NumberOrString::String(self.0.to_owned())),
             code_description: Some(CodeDescription {
-                href: DIRECTIVE_IMPORT.parse().unwrap(),
+                href: DIRECTIVE_IMPORT
+                    .parse()
+                    .expect("DIRECTIVE_IMPORT is a static valid url"),
             }),
             source: Some(SEMANTICS.to_owned()),
             message: self.1.to_owned(),
@@ -62,7 +64,9 @@ impl ImportError {
             severity: Some(DiagnosticSeverity::ERROR),
             code: Some(NumberOrString::String(self.0.to_owned())),
             code_description: Some(CodeDescription {
-                href: DIRECTIVE_IMPORT.parse().unwrap(),
+                href: DIRECTIVE_IMPORT
+                    .parse()
+                    .expect("DIRECTIVE_IMPORT is a static valid url"),
             }),
             source: Some(SEMANTICS.to_owned()),
             message: self.1.to_owned(),
@@ -79,9 +83,9 @@ fn analyze_import_statement(
     analysis: &mut Analysis,
 ) {
     // "import as" alias
-    let alias_node = import_node
-        .child_by_field_name(Rule::ImportAlias.to_string())
-        .unwrap();
+    let Some(alias_node) = import_node.child_by_field_name(Rule::ImportAlias.to_string()) else {
+        return;
+    };
     let alias_range = utils::parser_node_to_document_range(&alias_node);
     let import_alias = doc.get_ranged_text(alias_node.start_byte()..alias_node.end_byte());
     analysis.add_symbol(
@@ -95,32 +99,40 @@ fn analyze_import_statement(
     );
 
     // import path
-    let path_node = import_node
-        .child_by_field_name(Rule::ImportPath.to_string())
-        .unwrap();
+    let Some(path_node) = import_node.child_by_field_name(Rule::ImportPath.to_string()) else {
+        return;
+    };
     let path_range = utils::parser_node_to_document_range(&path_node);
     // the tree-sitter parser had ensured the import_path is '"' quoted, so it is safe to slice like this [1..len()-1]
     let import_path_str = doc.get_ranged_text(path_node.start_byte() + 1..path_node.end_byte() - 1);
     let import_path_buf = PathBuf::from(&import_path_str);
+    // A `None` result (e.g. the uri is not a file or the path cannot be
+    // canonicalized) is reported as an uncanonical import below.
     let canonicalize_import = match import_path_buf.is_absolute() {
-        true => import_path_buf.canonicalize(),
-        false => doc.dir().join(import_path_buf).canonicalize(),
+        true => import_path_buf.canonicalize().ok(),
+        false => doc
+            .dir()
+            .ok()
+            .and_then(|dir| dir.join(import_path_buf).canonicalize().ok()),
     };
 
     match canonicalize_import {
-        Ok(canonicalize_import_path) => {
+        Some(canonicalize_import_path) => {
             if !canonicalize_import_path.is_file() {
                 // import must be a file
                 analysis.add_diagnostic(ImportError::PATH_NOT_FILE.build(path_range, None));
             } else if !canonicalize_import_path.exists() {
                 // import must exists
                 analysis.add_diagnostic(ImportError::PATH_NOT_EXISTS.build(path_range, None));
-            } else if doc.canonical_uri() == canonicalize_import_path {
+            } else if doc
+                .canonical_uri()
+                .is_ok_and(|canonical_uri| canonical_uri == canonicalize_import_path)
+            {
                 // don't import yourself
                 analysis.add_diagnostic(ImportError::PATH_REF_SELF.build(path_range, None));
             }
             //
-            let canonicalize_import_str = canonicalize_import_path.to_str().unwrap();
+            let canonicalize_import_str = canonicalize_import_path.to_string_lossy();
             ctx.import_map
                 .entry(canonicalize_import_str.to_string())
                 .and_modify(|symbols| {
@@ -138,10 +150,9 @@ fn analyze_import_statement(
                     ));
                 })
                 .or_insert_with(|| {
-                    analysis.record_valid_import(
-                        &import_path_str, // record original text as key
-                        Uri::from_file_path(&canonicalize_import_path).unwrap(),
-                    );
+                    if let Some(uri) = Uri::from_file_path(&canonicalize_import_path) {
+                        analysis.record_valid_import(&import_path_str, uri); // record original text as key
+                    }
                     vec![Symbol {
                         rule: Rule::ImportPath,
                         start_byte: path_node.start_byte(),
@@ -150,7 +161,7 @@ fn analyze_import_statement(
                     }]
                 });
         }
-        Err(_) => {
+        None => {
             analysis.add_diagnostic(ImportError::PATH_UNCANONICAL.build(path_range, None));
         }
     }
@@ -163,9 +174,9 @@ fn analyze_macro_statement(
     analysis: &mut Analysis,
 ) {
     // "import as" alias
-    let name_node = macro_node
-        .child_by_field_name(Rule::MacroName.to_string())
-        .unwrap();
+    let Some(name_node) = macro_node.child_by_field_name(Rule::MacroName.to_string()) else {
+        return;
+    };
     let name_range = utils::parser_node_to_document_range(&name_node);
     let name_text = doc.get_ranged_text(name_node.start_byte()..name_node.end_byte());
     analysis.add_symbol(
@@ -186,11 +197,10 @@ impl SymbolAnalysis for Analysis {
         doc: &TextDocument,
         ctx: &mut AnalysisContext,
     ) {
-        let rule = Rule::from_str(node.kind());
-        if rule.is_err() {
+        let Ok(rule) = Rule::from_str(node.kind()) else {
             return;
-        }
-        match rule.unwrap() {
+        };
+        match rule {
             Rule::ImportStmt => {
                 analyze_import_statement(node, doc, ctx, self);
             }

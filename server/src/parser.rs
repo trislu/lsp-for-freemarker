@@ -4,23 +4,34 @@
 
 use tree_sitter::{InputEdit, Node, Parser, Point, Tree};
 
-#[derive(Default, Debug)]
 pub struct TextParser {
-    //parser: Parser,
+    parser: Parser,
     ast: Option<Tree>,
 }
 
+impl std::fmt::Debug for TextParser {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("TextParser")
+            .field("has_ast", &self.ast.is_some())
+            .finish()
+    }
+}
+
 impl TextParser {
-    /// Creates a new document from the given text and language id. It creates
-    /// a rope, parser and syntax tree from the text.
+    /// Creates a new parser and parses the given text into an initial syntax tree.
     pub fn new(text: &str) -> Self {
+        let mut parser = Self::parser_for_freemarker();
+        let ast = parser.parse(text, None);
+        TextParser { parser, ast }
+    }
+
+    fn parser_for_freemarker() -> Parser {
         let mut parser = Parser::new();
         let language = tree_sitter_freemarker::LANGUAGE;
         parser
             .set_language(&language.into())
             .expect("set parser language should always succeed");
-        let ast = parser.parse(text, None);
-        TextParser { ast }
+        parser
     }
 
     pub fn get_ast(&self) -> Option<Tree> {
@@ -28,31 +39,26 @@ impl TextParser {
     }
 
     pub fn get_node_at_point(&self, point: Point) -> Option<Node<'_>> {
-        if let Some(tree) = self.ast.as_ref() {
-            return tree
-                .root_node()
-                .named_descendant_for_point_range(point, point);
-        }
-        None
+        let tree = self.ast.as_ref()?;
+        tree.root_node()
+            .named_descendant_for_point_range(point, point)
     }
 
     pub fn apply_edit(&mut self, text: &str, input_edit: Option<InputEdit>) {
-        //TODO: what if the document's encoding is not UTF8?
-        let old_tree = self.ast.as_mut().unwrap();
-        let mut parser = Parser::new();
-        let language = tree_sitter_freemarker::LANGUAGE;
-        parser
-            .set_language(&language.into())
-            .expect("set parser language should always succeed");
-        self.ast = parser.parse(
-            text,
-            match input_edit {
-                Some(edit) => {
-                    old_tree.edit(&edit);
-                    Some(old_tree)
-                }
-                _ => None,
-            },
-        );
+        // TODO: what if the document's encoding is not UTF8?
+        // Apply the incremental edit to the existing tree, then reuse it for an
+        // incremental re-parse. A `None` edit means the whole document changed,
+        // in which case we fall back to a full parse.
+        let mut incremental = false;
+        if let Some(edit) = input_edit {
+            let tree = self
+                .ast
+                .as_mut()
+                .expect("cannot apply an incremental edit without an existing tree");
+            tree.edit(&edit);
+            incremental = true;
+        }
+        let old_tree = if incremental { self.ast.as_ref() } else { None };
+        self.ast = self.parser.parse(text, old_tree);
     }
 }

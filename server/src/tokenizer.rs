@@ -22,8 +22,8 @@ use tree_sitter_freemarker::grammar::Rule;
 use crate::{
     analysis::{Analysis, AnalysisContext, HighlightAnalysis},
     doc::TextDocument,
+    features::SemanticTokenFeature,
     reactor::Reactor,
-    server::SemanticTokenFeature,
 };
 
 // NOTICE: We use "semantic-token-provider" to provide code highlighting, see below link
@@ -228,7 +228,6 @@ impl HighlightAnalysis for Analysis {
         doc: &TextDocument,
         ctx: &mut AnalysisContext,
     ) {
-        //let source = self.doc.rope.to_string();
         if node.is_error() || node.is_missing() {
             // not sure if it is proper
             return;

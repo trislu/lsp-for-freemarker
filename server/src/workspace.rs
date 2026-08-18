@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 use crate::{
-    reactor::Reactor,
-    server::{
+    features::{
         ActionFeature, CompletionFeature, DiagnosticFeature, FoldingFeature, FormatFeature,
         GotoFeature, HoverFeature, SemanticTokenFeature,
     },
+    reactor::Reactor,
     window_log_info,
 };
 
@@ -97,104 +97,119 @@ impl Workspace {
     pub async fn on_did_delete_files(&self, params: DeleteFilesParams) {
         let mut write_guard = self.reactors.write().await;
         for file_deletion in &params.files {
-            let uri = Uri::from_str(&file_deletion.uri).unwrap();
+            let Ok(uri) = Uri::from_str(&file_deletion.uri) else {
+                continue;
+            };
             window_log_info!(format!("did delete file: {}", uri.to_string()));
             write_guard.remove(&uri);
         }
     }
 
     // LSP request/response
+    /// Runs `func` against the reactor for `uri`, holding a read lock for the
+    /// duration of the call. Returns an internal error when the document is
+    /// not open.
+    async fn with_reactor<T>(
+        &self,
+        uri: &Uri,
+        func: impl AsyncFnOnce(&Reactor) -> jsonrpc::Result<T>,
+    ) -> jsonrpc::Result<T> {
+        let read_guard = self.reactors.read().await;
+        match read_guard.get(uri) {
+            Some(reactor) => func(reactor).await,
+            None => Err(Error::internal_error()),
+        }
+    }
+
     pub async fn on_diagnostic(
         &self,
         params: DocumentDiagnosticParams,
     ) -> jsonrpc::Result<DocumentDiagnosticReportResult> {
-        let uri = &params.text_document.uri;
-        let read_guard = self.reactors.read().await;
-        match read_guard.get(uri) {
-            Some(reactor) => reactor.on_diagnostic(params).await,
-            None => Err(Error::internal_error()),
-        }
+        let uri = params.text_document.uri.clone();
+        self.with_reactor(&uri, async move |reactor| {
+            reactor.on_diagnostic(params).await
+        })
+        .await
     }
 
     pub async fn on_semantic_tokens_full(
         &self,
         params: SemanticTokensParams,
     ) -> jsonrpc::Result<Option<SemanticTokensResult>> {
-        let uri = &params.text_document.uri;
+        let uri = params.text_document.uri.clone();
         window_log_info!(format!("on_semantic_tokens_full: {}", uri.to_string()));
-        let read_guard = self.reactors.read().await;
-        match read_guard.get(uri) {
-            Some(reactor) => reactor.on_semantic_tokens_full(params).await,
-            None => Err(Error::internal_error()),
-        }
+        self.with_reactor(&uri, async move |reactor| {
+            reactor.on_semantic_tokens_full(params).await
+        })
+        .await
     }
 
     pub async fn on_hover(&self, params: HoverParams) -> jsonrpc::Result<Option<Hover>> {
-        let uri = &params.text_document_position_params.text_document.uri;
-        let read_guard = self.reactors.read().await;
-        match read_guard.get(uri) {
-            Some(reactor) => reactor.on_hover(params).await,
-            None => Err(Error::internal_error()),
-        }
+        let uri = params
+            .text_document_position_params
+            .text_document
+            .uri
+            .clone();
+        self.with_reactor(&uri, async move |reactor| reactor.on_hover(params).await)
+            .await
     }
 
     pub async fn on_completion(
         &self,
         params: CompletionParams,
     ) -> jsonrpc::Result<Option<CompletionResponse>> {
-        let uri = &params.text_document_position.text_document.uri;
-        let read_guard = self.reactors.read().await;
-        match read_guard.get(uri) {
-            Some(reactor) => reactor.on_completion(params).await,
-            None => Err(Error::internal_error()),
-        }
+        let uri = params.text_document_position.text_document.uri.clone();
+        self.with_reactor(&uri, async move |reactor| {
+            reactor.on_completion(params).await
+        })
+        .await
     }
 
     pub async fn on_goto_definition(
         &self,
         params: GotoDefinitionParams,
     ) -> jsonrpc::Result<Option<GotoDefinitionResponse>> {
-        let uri = &params.text_document_position_params.text_document.uri;
-        let read_guard = self.reactors.read().await;
-        match read_guard.get(uri) {
-            Some(reactor) => reactor.on_goto_definition(params).await,
-            None => Err(Error::internal_error()),
-        }
+        let uri = params
+            .text_document_position_params
+            .text_document
+            .uri
+            .clone();
+        self.with_reactor(&uri, async move |reactor| {
+            reactor.on_goto_definition(params).await
+        })
+        .await
     }
 
     pub async fn on_formatting(
         &self,
         params: DocumentFormattingParams,
     ) -> jsonrpc::Result<Option<Vec<TextEdit>>> {
-        let uri = &params.text_document.uri;
-        let read_guard = self.reactors.read().await;
-        match read_guard.get(uri) {
-            Some(reactor) => reactor.on_formatting(params).await,
-            None => Err(Error::internal_error()),
-        }
+        let uri = params.text_document.uri.clone();
+        self.with_reactor(&uri, async move |reactor| {
+            reactor.on_formatting(params).await
+        })
+        .await
     }
 
     pub async fn on_folding_range(
         &self,
         params: FoldingRangeParams,
     ) -> jsonrpc::Result<Option<Vec<FoldingRange>>> {
-        let uri = &params.text_document.uri;
-        let read_guard = self.reactors.read().await;
-        match read_guard.get(uri) {
-            Some(reactor) => reactor.on_folding_range(params).await,
-            None => Err(Error::internal_error()),
-        }
+        let uri = params.text_document.uri.clone();
+        self.with_reactor(&uri, async move |reactor| {
+            reactor.on_folding_range(params).await
+        })
+        .await
     }
 
     pub async fn on_code_action(
         &self,
         params: CodeActionParams,
     ) -> jsonrpc::Result<Option<Vec<CodeActionOrCommand>>> {
-        let uri = &params.text_document.uri;
-        let read_guard = self.reactors.read().await;
-        match read_guard.get(uri) {
-            Some(reactor) => reactor.on_code_action(params).await,
-            None => Err(Error::internal_error()),
-        }
+        let uri = params.text_document.uri.clone();
+        self.with_reactor(&uri, async move |reactor| {
+            reactor.on_code_action(params).await
+        })
+        .await
     }
 }

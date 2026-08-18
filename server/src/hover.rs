@@ -2,9 +2,9 @@
 // Licensed under the BSD 3-Clause License.
 // SPDX-License-Identifier: BSD-3-Clause
 
-use once_cell::sync::Lazy;
 use rust_embed::{Embed, EmbeddedFile};
 use serde::Deserialize;
+use std::sync::LazyLock;
 use std::{collections::HashMap, str::FromStr};
 use tower_lsp_server::{
     jsonrpc,
@@ -15,8 +15,7 @@ use tower_lsp_server::{
 };
 use tree_sitter_freemarker::grammar::Rule;
 
-//use crate::symbol::MacroNamespace;
-use crate::{reactor::Reactor, server::HoverFeature, utils};
+use crate::{features::HoverFeature, reactor::Reactor, utils};
 
 #[derive(Embed)]
 #[folder = "assets/hover/"]
@@ -92,7 +91,7 @@ impl HoverAsset {
     }
 }
 
-static STATIC_ASSETS: Lazy<HoverAsset> = Lazy::new(HoverAsset::new);
+static STATIC_ASSETS: LazyLock<HoverAsset> = LazyLock::new(HoverAsset::new);
 
 pub fn hover_capability() -> HoverProviderCapability {
     HoverProviderCapability::Simple(true)

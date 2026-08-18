@@ -25,8 +25,8 @@ use tree_sitter_freemarker::{
 use crate::{
     analysis::{Analysis, AnalysisContext, DiagnosticAnalysis, Symbol},
     doc::TextDocument,
+    features::DiagnosticFeature,
     reactor::Reactor,
-    server::DiagnosticFeature,
     utils,
 };
 
@@ -111,7 +111,10 @@ impl From<Scenario> for Diagnostic {
             severity: Some(s.severity),
             code: Some(NumberOrString::String(s.code.to_owned())),
             code_description: Some(CodeDescription {
-                href: s.href.parse().unwrap(),
+                href: s
+                    .href
+                    .parse()
+                    .expect("static scenario href must be a valid url"),
             }),
             source: Some(s.source.to_owned()),
             message: s.message.to_owned(),

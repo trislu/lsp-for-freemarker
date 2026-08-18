@@ -54,7 +54,9 @@ impl Analysis {
         let mut ctx = AnalysisContext {
             ..Default::default()
         };
-        let ast = parser.get_ast().unwrap();
+        let ast = parser
+            .get_ast()
+            .expect("parser always produces a syntax tree");
         analysis.syntatic_analysis(&ast.root_node(), doc, &mut ctx);
         analysis.post_syntatic_analysis(doc, &mut ctx);
         analysis

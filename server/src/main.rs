@@ -13,6 +13,7 @@ mod client;
 mod completion;
 mod diagnosis;
 mod doc;
+mod features;
 mod folding;
 mod format;
 mod goto;

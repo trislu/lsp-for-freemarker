@@ -10,7 +10,7 @@ use tower_lsp_server::{
 };
 use tree_sitter::Point;
 
-use crate::{reactor::Reactor, server::FormatFeature, window_log_info};
+use crate::{features::FormatFeature, reactor::Reactor, window_log_info};
 
 #[derive(Clone, Copy)]
 struct FormatState {
@@ -35,13 +35,12 @@ fn update_state(
     let trimed_line = line.trim_start();
     if trimed_line.starts_with("</#") || trimed_line.starts_with("<#") {
         let col = line.len() - trimed_line.len();
-        let node = reactor
-            .get_parser()
-            .get_node_at_point(Point {
-                row: index,
-                column: col,
-            })
-            .unwrap();
+        let Some(node) = reactor.get_parser().get_node_at_point(Point {
+            row: index,
+            column: col,
+        }) else {
+            return state;
+        };
         if node.kind() == "comment" {
             // under comment section
             state.has_directive = false;

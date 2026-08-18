@@ -12,7 +12,7 @@ use tower_lsp_server::{
 };
 use tree_sitter_freemarker::grammar::Rule;
 
-use crate::{reactor::Reactor, server::GotoFeature, utils};
+use crate::{features::GotoFeature, reactor::Reactor, utils};
 
 pub fn definition_capability() -> OneOf<bool, DefinitionOptions> {
     OneOf::Left(true)

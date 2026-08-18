@@ -10,8 +10,8 @@ use tree_sitter_freemarker::grammar::Rule;
 
 use crate::{
     analysis::{Analysis, AnalysisContext, FoldingAnalysis},
+    features::FoldingFeature,
     reactor::Reactor,
-    server::FoldingFeature,
 };
 
 pub fn folding_capability() -> FoldingRangeProviderCapability {

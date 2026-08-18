@@ -23,6 +23,12 @@ pub enum DocumentError {
     PositionOutOfBounds(u32, u32),
     #[error("line index {0} is out of bounds")]
     LineIndexOutOfBounds(usize),
+    #[error("uri is not a file uri: {0}")]
+    NotAFile(String),
+    #[error("cannot canonicalize path for uri: {0}")]
+    CannotCanonicalize(String),
+    #[error("file path for uri has no parent directory: {0}")]
+    NoParentDirectory(String),
 }
 
 #[derive(Clone, Debug, Copy)]
@@ -57,15 +63,25 @@ impl TextDocument {
         self.uri.clone()
     }
 
-    pub fn canonical_uri(&self) -> PathBuf {
-        let filepath = self.uri.to_file_path().unwrap();
-        filepath.canonicalize().unwrap()
+    pub fn canonical_uri(&self) -> Result<PathBuf, DocumentError> {
+        let filepath = self
+            .uri
+            .to_file_path()
+            .ok_or_else(|| DocumentError::NotAFile(self.uri.to_string()))?;
+        filepath
+            .canonicalize()
+            .map_err(|_| DocumentError::CannotCanonicalize(self.uri.to_string()))
     }
 
-    pub fn dir(&self) -> PathBuf {
-        let filepath = self.uri.to_file_path().unwrap();
-        let parent = filepath.parent().unwrap();
-        parent.to_path_buf()
+    pub fn dir(&self) -> Result<PathBuf, DocumentError> {
+        let filepath = self
+            .uri
+            .to_file_path()
+            .ok_or_else(|| DocumentError::NotAFile(self.uri.to_string()))?;
+        let parent = filepath
+            .parent()
+            .ok_or_else(|| DocumentError::NoParentDirectory(self.uri.to_string()))?;
+        Ok(parent.to_path_buf())
     }
 
     pub fn line_count(&self) -> usize {
@@ -251,13 +267,10 @@ impl TextDocument {
                     },
                 };
 
-                //tree.edit(&edit);
-                //self.tree = self.parser.parse(self.rope.to_string(), Some(tree));
                 return Ok(Some(edit));
             }
             None => {
                 self.rope = Rope::from_str(&change.text);
-                //self.tree = self.parser.parse(&change.text, None);
             }
         }
         // update version
